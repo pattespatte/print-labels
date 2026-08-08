@@ -1,0 +1,457 @@
+/* print-labels — styles.css
+ *
+ * Screen layout + print rules. The print stylesheet deliberately reuses the same
+ * .sheet / .label DOM the on-screen preview renders, so what you see is what
+ * prints (WYSIWYG). Print mode only hides chrome and applies @page sizing.
+ */
+
+:root {
+  --ink: #1a1a1a;
+  --paper: #ffffff;
+  --line: #d0d4dc;
+  --line-strong: #9aa0ab;
+  --accent: #2d6a4f;
+  --accent-weak: #d8e9e0;
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --muted: #6b7280;
+  --danger: #b42318;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+header.app-header {
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+header.app-header h1 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 600;
+}
+header.app-header .subtitle {
+  color: var(--muted);
+  font-size: 13px;
+}
+/* Push the header print button to the far right. */
+header.app-header #print-btn-header {
+  margin-left: auto;
+  align-self: center;
+}
+
+/* Two-pane layout: controls left, preview right */
+main.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+  align-items: start;
+}
+
+aside.controls {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+
+section.panel {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+section.panel:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+section.panel h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+label.field {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+label.field > span {
+  display: block;
+  margin-bottom: 3px;
+}
+
+select,
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 13px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+button {
+  padding: 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--paper);
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--ink);
+}
+button:hover {
+  background: var(--bg);
+}
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+button.primary:hover {
+  filter: brightness(1.05);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+button.danger {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+button.danger:hover {
+  background: #fdeceB;
+}
+button.danger.primary {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}
+button.danger.primary:hover {
+  filter: brightness(1.05);
+}
+
+/* Confirm modal */
+#modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+#modal-backdrop[hidden] {
+  display: none;
+}
+#modal {
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 380px;
+  width: calc(100% - 32px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+#modal h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+#modal p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.row > * {
+  flex: 1;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Drop zone — a clean rectangle; the inner <label> is the click target */
+#drop-zone {
+  border: 2px dashed var(--line-strong);
+  border-radius: 6px;
+  padding: 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  transition: background 0.15s, border-color 0.15s;
+}
+#drop-zone label {
+  display: block;
+  cursor: pointer;
+}
+#drop-zone:hover,
+#drop-zone.dragover {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* Hide the file input. The inner <label for="file-input"> forwards clicks
+   to it; the drop handler is on #drop-zone itself. display:none is safe here
+   because the label (not the input) is the click target. */
+#drop-zone input[type="file"] {
+  display: none;
+}
+
+/* Item list */
+#items-list {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.item-row {
+  display: grid;
+  grid-template-columns: auto 1fr 52px 24px;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.item-row:last-child {
+  border-bottom: none;
+}
+.item-row .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.item-row input[type="number"] {
+  padding: 3px 5px;
+  font-size: 12px;
+}
+.item-row .index {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Mapper rows */
+/* Manual item editor */
+#item-editor {
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 8px;
+  background: var(--accent-weak);
+  margin-bottom: 8px;
+}
+.editor-row {
+  margin-bottom: 4px;
+}
+.editor-row input {
+  font-size: 12px;
+  padding: 4px 6px;
+}
+
+.mapper-row {
+  /* Layout: [lineno] [path select ……………] [size] [B] [literal …]
+     The path dropdown is the widest content (field names like
+     "planting.indoor_start_weeks_before_last_frost"), so it takes all
+     leftover space via flex:1. Size/B are fixed-width; literal shares
+     the remaining room. */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.mapper-row .lineno {
+  font-size: 11px;
+  color: var(--muted);
+  flex: 0 0 14px;
+}
+/* Path dropdown grows to fill — this is the fix for the truncated dropdown. */
+.mapper-row select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mapper-row input[type="number"] {
+  padding: 4px 5px;
+  font-size: 12px;
+  flex: 0 0 48px;
+}
+.mapper-row label {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+.mapper-row .controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.mapper-row input[type="text"] {
+  flex: 1 1 80px;
+  min-width: 60px;
+}
+
+/* Preview pane */
+section.preview-pane {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  min-height: 400px;
+}
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.preview-toolbar .meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.preview-toolbar .spacer {
+  flex: 1;
+}
+
+#preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  overflow: auto;
+  padding: 12px;
+}
+
+/* The sheet + label rendering, shared by screen and print. */
+.sheet-wrap {
+  /* screen-only scaling wrapper; print resets transform to none */
+  transform-origin: top center;
+}
+.sheet {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.label {
+  position: absolute;
+  padding: 1mm;
+  overflow: hidden;
+  color: var(--ink);
+  line-height: 1.15;
+  /* Faint outline so the sheet structure is always visible on screen,
+     even when a label has no text (e.g. before the field mapper is set
+     or when reusing a partial sheet). Calibration grid strengthens this. */
+  border: 0.5px solid var(--line);
+}
+.label .line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.label.empty {
+  border-style: dashed;
+}
+.label.grid-on {
+  border: 0.5px solid var(--line-strong);
+}
+.page-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: -16px;
+}
+
+.status-msg {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 40px;
+  text-align: center;
+}
+
+/* --- Print rules --- */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+  body > *:not(.print-root) {
+    display: none !important;
+  }
+  /* The preview is lifted into a .print-root wrapper at print time. */
+  .print-root {
+    display: block !important;
+  }
+  .preview-toolbar,
+  .page-label,
+  header.app-header {
+    display: none !important;
+  }
+  #preview {
+    display: block;
+    padding: 0;
+    gap: 0;
+    overflow: visible;
+  }
+  .sheet-wrap {
+    transform: none !important;
+  }
+  .sheet {
+    box-shadow: none;
+    border: none;
+    page-break-after: always;
+  }
+  .sheet:last-child {
+    page-break-after: auto;
+  }
+  .label.empty {
+    border: none;
+  }
+  /* In print, suppress the faint always-on screen outline unless the
+     calibration grid is explicitly enabled. Only .grid-on keeps its border. */
+  .label {
+    border: none;
+  }
+  .label.grid-on {
+    border: 0.5px solid var(--line-strong) !important;
+  }
+}

@@ -1,0 +1,5 @@
+# Planning artefacts (PRD, tasks, verification report)
+.clavix/
+
+# macOS
+.DS_Store

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>print-labels unit tests</title>
+    <style>
+      body { font-family: -apple-system, sans-serif; padding: 20px; }
+      .pass { color: #2d6a4f; }
+      .fail { color: #b42318; font-weight: bold; }
+      pre { background: #f4f5f7; padding: 8px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>print-labels — Layout unit tests</h1>
+    <p id="summary">running…</p>
+    <pre id="out"></pre>
+
+    <script src="formats.js"></script>
+    <script src="app.js"></script>
+    <script>
+      (function () {
+        const out = document.getElementById("out");
+        const summary = document.getElementById("summary");
+        let passed = 0, failed = 0;
+        function assert(name, cond, detail) {
+          if (cond) { passed++; out.textContent += "✓ " + name + "\n"; }
+          else {
+            failed++;
+            out.textContent += "✗ FAIL: " + name + (detail ? "  → " + detail : "") + "\n";
+          }
+        }
+        function approx(a, b) { return Math.abs(a - b) < 0.0001; }
+
+        const L = window.PrintLabels.Layout;
+        const F = window.FORMATS;
+
+        // Wait for DOMContentLoaded to have run UI.init (harmless here).
+        document.addEventListener("DOMContentLoaded", function () {
+          const fmt5027 = F["5027"];
+
+          // slotPosition: slot 0 top-left = (marginLeft, marginTop)
+          let p = L.slotPosition(fmt5027, 0);
+          assert("5027 slot 0 x = 10.0", approx(p.x_mm, 10.0), "got " + p.x_mm);
+          assert("5027 slot 0 y = 6.0", approx(p.y_mm, 6.0), "got " + p.y_mm);
+
+          // slot 5 = start of row 1 → x resets to 10, y += pitchY (21.2)
+          p = L.slotPosition(fmt5027, 5);
+          assert("5027 slot 5 x = 10.0", approx(p.x_mm, 10.0), "got " + p.x_mm);
+          assert("5027 slot 5 y = 27.2", approx(p.y_mm, 6.0 + 21.2), "got " + p.y_mm);
+
+          // slot 1 = col 1 → x += pitchX (39.5 manual override)
+          p = L.slotPosition(fmt5027, 1);
+          assert("5027 slot 1 x = 49.5 (manual pitchX)", approx(p.x_mm, 10.0 + 39.5), "got " + p.x_mm);
+
+          // 4336 manual pitch overrides
+          const fmt4336 = F["4336"];
+          p = L.slotPosition(fmt4336, 1);
+          assert("4336 slot 1 x = 49.25 (manual pitchX)", approx(p.x_mm, 10.0 + 39.25), "got " + p.x_mm);
+          p = L.slotPosition(fmt4336, 5);
+          assert("4336 slot 5 y = 19.78 (manual pitchY)", approx(p.y_mm, 2.0 + 17.78), "got " + p.y_mm);
+
+          // pageOf: 65 slots per page → slot 65 starts page 1
+          assert("5027 pageOf(0) = 0", L.pageOf(fmt5027, 0) === 0);
+          assert("5027 pageOf(64) = 0", L.pageOf(fmt5027, 64) === 0);
+          assert("5027 pageOf(65) = 1", L.pageOf(fmt5027, 65) === 1);
+          assert("5027 slotsPerPage = 65", L.slotsPerPage(fmt5027) === 65);
+
+          // fillSheet: basic pagination (slots now hold full items, not raws)
+          const items = [
+            { raw: { plant_name_swedish: "A" }, qty: 3, selected: true },
+            { raw: { plant_name_swedish: "B" }, qty: 1, selected: true },
+          ];
+          const pages = L.fillSheet(fmt5027, items, 0);
+          assert("fillSheet returns ≥1 page", pages.length >= 1);
+          assert("page 0 has 65 slots", pages[0].length === 65);
+          assert("page 0 slot 0 = first item", pages[0][0] && pages[0][0].raw && pages[0][0].raw.plant_name_swedish === "A");
+          assert("page 0 slot 2 = third copy (A×3)", pages[0][2] && pages[0][2].raw && pages[0][2].raw.plant_name_swedish === "A");
+          assert("page 0 slot 3 = item B", pages[0][3] && pages[0][3].raw && pages[0][3].raw.plant_name_swedish === "B");
+          assert("page 0 slot 4 = null (empty)", pages[0][4] === null);
+
+          // skip-N: first N slots blank
+          const pagesSkip = L.fillSheet(fmt5027, items, 2);
+          assert("skipN=2: slot 0 null", pagesSkip[0][0] === null);
+          assert("skipN=2: slot 1 null", pagesSkip[0][1] === null);
+          assert("skipN=2: slot 2 = first item", pagesSkip[0][2] && pagesSkip[0][2].raw && pagesSkip[0][2].raw.plant_name_swedish === "A");
+
+          // expandItems respects selected + qty (returns full items now)
+          const exp = L.expandItems([
+            { raw: { n: "x" }, qty: 2, selected: true },
+            { raw: { n: "y" }, qty: 5, selected: false },
+          ]);
+          assert("expandItems skips unselected", exp.length === 2 && exp[0].raw && exp[0].raw.n === "x");
+
+          // Manual items: frozen `lines` bypass the field mapper.
+          const RL = window.PrintLabels.resolveLines;
+          const manualItem = {
+            lines: [
+              { text: "Tomat", sizePt: 7, bold: true },
+              { text: "Vilma", sizePt: 6, bold: false },
+              { text: "", sizePt: 6, bold: false },
+              { text: "", sizePt: 6, bold: false },
+            ],
+            qty: 1, selected: true,
+          };
+          // Save mapping, set a conflicting mapping, confirm manual lines win.
+          const S_old = window.PrintLabels.state.mapping;
+          window.PrintLabels.state.mapping = [
+            { path: "plant_name_swedish", sizePt: 9, bold: false, literal: "WRONG" },
+            { path: "variety", sizePt: 9, bold: false, literal: "" },
+            { path: "", sizePt: 9, bold: false, literal: "" },
+            { path: "", sizePt: 9, bold: false, literal: "" },
+          ];
+          const manualLines = RL(manualItem);
+          assert("manual item line1 = typed text", manualLines[0].text === "Tomat" && manualLines[0].bold === true);
+          assert("manual item bypasses mapping (no WRONG)", manualLines[0].text !== "WRONG");
+          assert("manual item line2 = typed text", manualLines[1].text === "Vilma");
+          // Imported item still uses mapping when no frozen lines.
+          const importedItem = { raw: { plant_name_swedish: "Sparris" }, qty: 1, selected: true };
+          const importedLines = RL(importedItem);
+          assert("imported item uses mapping literal", importedLines[0].text === "WRONG");
+          window.PrintLabels.state.mapping = S_old;
+
+          // Fields.discoverPaths
+          const P = window.PrintLabels.Fields;
+          const paths = P.discoverPaths([
+            { a: 1, b: { c: 2 }, arr: [{ d: 3 }], empty: "" },
+          ]);
+          assert("discoverPaths finds top-level", paths.indexOf("a") !== -1);
+          assert("discoverPaths finds nested", paths.indexOf("b.c") !== -1);
+          assert("discoverPaths finds array[0]", paths.indexOf("arr[0].d") !== -1);
+          assert("discoverPaths skips empty", paths.indexOf("empty") === -1);
+
+          // Project round-trip
+          const Proj = window.PrintLabels.Project;
+          const S = window.PrintLabels.state;
+          S.items = [{ raw: { plant_name_swedish: "Z" }, qty: 4, selected: true }];
+          S.mapping = [
+            { path: "plant_name_swedish", sizePt: 8, bold: true, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "hi" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+          ];
+          S.formatId = "4336";
+          S.skipN = 7;
+          S.grid = true;
+          const before = Proj.serialize();
+          Proj.load(JSON.parse(JSON.stringify(before)));
+          const after = Proj.serialize();
+          // exportedAt is a fresh timestamp on every serialize() call; strip it.
+          delete before.exportedAt;
+          delete after.exportedAt;
+          assert("Project serialize→load→serialize round-trips", JSON.stringify(before) === JSON.stringify(after), "state differs after reload");
+
+          summary.textContent = passed + " passed, " + failed + " failed";
+          summary.className = failed === 0 ? "pass" : "fail";
+        });
+      })();
+    </script>
+  </body>
+</html>

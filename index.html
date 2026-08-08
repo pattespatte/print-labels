@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Print Labels</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Print Labels</h1>
+      <span class="subtitle">HERMA A4 label sheets · plant labels</span>
+      <button id="print-btn-header" class="primary" type="button">Print</button>
+    </header>
+
+    <main class="layout">
+      <aside class="controls">
+        <!-- Import / Export -->
+        <section class="panel" id="io-panel">
+          <h2>Data</h2>
+          <div id="drop-zone">
+            <label for="file-input">Drop JSON here<br />or click to choose</label>
+            <input type="file" id="file-input" accept="application/json,.json" />
+          </div>
+          <div class="row" style="margin-top: 10px">
+            <button id="export-btn" class="primary" disabled>Export project</button>
+          </div>
+          <p id="io-status" class="hint"></p>
+        </section>
+
+        <!-- Items -->
+        <section class="panel" id="items-panel">
+          <h2>Items</h2>
+          <div class="row" style="margin-bottom: 6px">
+            <button id="select-all" type="button">Select all</button>
+            <button id="select-none" type="button">Select none</button>
+            <button id="add-item" type="button">+ Add label</button>
+            <button id="clear-all" type="button" class="danger">Clear all</button>
+          </div>
+          <div id="item-editor" hidden>
+            <div class="editor-row">
+              <input type="text" data-line="0" placeholder="Line 1 (bold, largest)" />
+            </div>
+            <div class="editor-row">
+              <input type="text" data-line="1" placeholder="Line 2" />
+            </div>
+            <div class="editor-row">
+              <input type="text" data-line="2" placeholder="Line 3" />
+            </div>
+            <div class="editor-row">
+              <input type="text" data-line="3" placeholder="Line 4" />
+            </div>
+            <div class="row" style="margin: 6px 0">
+              <label class="field" style="flex: 0 0 90px; margin: 0">
+                <span>Quantity</span>
+                <input type="number" id="editor-qty" min="1" value="1" />
+              </label>
+              <span style="flex: 1"></span>
+              <button id="editor-save" type="button" class="primary">Add</button>
+              <button id="editor-cancel" type="button">Cancel</button>
+            </div>
+          </div>
+          <div id="items-list">
+            <p class="status-msg" style="padding: 16px">No items loaded.</p>
+          </div>
+        </section>
+
+        <!-- Field mapping -->
+        <section class="panel" id="mapper-panel">
+          <h2>Field mapping</h2>
+          <div id="mapper-rows">
+            <!-- 4 mapper rows injected by app.js -->
+          </div>
+          <div class="row" style="margin-top: 8px">
+            <button id="preset-plant" type="button">Plant labels preset</button>
+            <button id="clear-mapping" type="button">Clear</button>
+          </div>
+        </section>
+
+        <!-- Sheet options -->
+        <section class="panel" id="sheet-panel">
+          <h2>Sheet</h2>
+          <label class="field">
+            <span>Format</span>
+            <select id="format-select"></select>
+          </label>
+          <label class="field">
+            <span>Skip first N labels (reuse partial sheet)</span>
+            <input type="number" id="skip-n" min="0" value="0" />
+          </label>
+          <label class="field" style="flex-direction: row; align-items: center; gap: 6px">
+            <input type="checkbox" id="grid-toggle" />
+            <span>Calibration grid (outline every label)</span>
+          </label>
+          <p class="hint">
+            Print tip: set paper size A4, margins to None, and turn off headers/footers.
+          </p>
+        </section>
+
+        <section class="panel">
+          <button id="print-btn" class="primary" style="width: 100%">Print</button>
+        </section>
+      </aside>
+
+      <section class="preview-pane">
+        <div class="preview-toolbar">
+          <span id="format-meta" class="meta"></span>
+          <span class="spacer"></span>
+          <label class="field" style="flex-direction: row; align-items: center; gap: 6px; margin: 0">
+            <input type="checkbox" id="scale-toggle" />
+            <span>Show at true size (100%)</span>
+          </label>
+        </div>
+        <div id="preview">
+          <p class="status-msg">Import a JSON file to begin.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Reusable confirm modal -->
+    <div id="modal-backdrop" hidden>
+      <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <h3 id="modal-title"></h3>
+        <p id="modal-body"></p>
+        <div class="row" style="justify-content: flex-end; gap: 8px">
+          <button id="modal-cancel" type="button">Cancel</button>
+          <button id="modal-confirm" type="button" class="danger">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Classic scripts (NOT type="module"): file:// blocks ES modules by CORS. -->
+    <script src="formats.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
