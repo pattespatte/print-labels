@@ -102,6 +102,19 @@ label.field > span {
   display: block;
   margin-bottom: 3px;
 }
+/* Inline checkbox + label (toolbar toggles). Inline-styled in HTML originally;
+   moved to a class so a stylesheet rule can override `display` to hide it. */
+label.field.inline-toggle {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+label.field.inline-toggle > span {
+  display: inline;
+  margin-bottom: 0;
+}
 
 select,
 input[type="number"],
@@ -332,6 +345,10 @@ section.preview-pane {
   border-radius: 8px;
   padding: 14px;
   min-height: 400px;
+  /* Allow this grid track to shrink below its content's intrinsic width so a
+     true-size (794px) sheet scrolls inside #preview instead of busting the
+     whole page/viewport horizontally. */
+  min-width: 0;
 }
 .preview-toolbar {
   display: flex;
@@ -351,16 +368,23 @@ section.preview-pane {
 #preview {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 24px;
   overflow: auto;
   padding: 12px;
 }
 
-/* The sheet + label rendering, shared by screen and print. */
+/* The sheet + label rendering, shared by screen and print.
+   The wrap is sized to the *scaled* sheet so it occupies exactly the
+   space the user sees — no phantom box of empty whitespace around a
+   shrunken visual sheet. The .sheet itself carries the transform with
+   a top-left origin so its visual top-left stays anchored at (0,0). */
 .sheet-wrap {
-  /* screen-only scaling wrapper; print resets transform to none */
-  transform-origin: top center;
+  flex: 0 0 auto;
+  /* width/height are set inline per-render from JS (scaled sheet size). */
+}
+.sheet-wrap > .sheet {
+  transform-origin: top left;
 }
 .sheet {
   position: relative;
@@ -434,6 +458,12 @@ section.preview-pane {
   }
   .sheet-wrap {
     transform: none !important;
+    /* Print uses real A4 sizing — ignore the scaled screen dimensions. */
+    width: auto !important;
+    height: auto !important;
+  }
+  .sheet-wrap > .sheet {
+    transform: none !important;
   }
   .sheet {
     box-shadow: none;
@@ -453,5 +483,35 @@ section.preview-pane {
   }
   .label.grid-on {
     border: 0.5px solid var(--line-strong) !important;
+  }
+}
+
+/* --- Responsive --- */
+/* On wide panes the sheet already fits at 1:1, so the true-size control is a
+   no-op. Hide it entirely (keep the live zoom % visible) instead of showing a
+   dead checkbox. JS toggles .fits-true on the toolbar to drive this. */
+.preview-toolbar.fits-true label.inline-toggle {
+  display: none;
+}
+/* While the control is hidden there's nothing between the meta and the zoom,
+   so collapse the spacer to keep the layout tidy. */
+.preview-toolbar.fits-true .spacer {
+  flex: 1;
+}
+
+/* Narrow screens: stack controls above the preview. */
+@media (max-width: 900px) {
+  main.layout {
+    grid-template-columns: 1fr;
+  }
+  aside.controls {
+    max-height: none;
+    overflow: visible;
+  }
+  /* On a single column the pane is as wide as the viewport, so fit-to-width
+     almost always lands at 100% and the true-size control would be hidden by
+     the rule above. Keep it available here regardless. */
+  .preview-toolbar.fits-true label.inline-toggle {
+    display: inline-flex;
   }
 }

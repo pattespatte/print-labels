@@ -12,12 +12,35 @@ belongings, workshop bins, name badges, batch numbers, seedling tags, and more.
 
 ## Run locally
 
-Just open `index.html` — no server, no build step, no dependencies:
+No build step, no dependencies — it's plain HTML/CSS/JS. You have two options:
+
+### Option A — local HTTP server (recommended)
+
+This is the recommended way to run it locally because the **Demo data** button
+uses `fetch()` to load `sample.json`, and browsers block `fetch()` on the
+`file://` scheme (origin `null`, blocked by the same-origin policy). Over HTTP
+everything works, including Demo data.
+
+Python's built-in server is the quickest — from the project folder:
 
 ```bash
-open index.html      # macOS
-xdg-open index.html  # Linux
+python3 -m http.server 8000
 ```
+
+Then open <http://localhost:8000/> in your browser. Any static server works
+(`npx serve`, `php -S localhost:8000`, etc.).
+
+### Option B — open the file directly
+
+```bash
+open index.html        # macOS
+xdg-open index.html    # Linux
+```
+
+This works for importing a `.json` file via the drop zone / file picker (that
+path uses the `<input type="file">` API, which is not subject to fetch CORS).
+But the **Demo data** button will fail with `Failed to fetch` — that's expected
+under `file://`, not a bug. Use the drop zone to load `sample.json` instead.
 
 It also deploys cleanly to GitHub Pages as a set of static files.
 
@@ -26,9 +49,9 @@ It also deploys cleanly to GitHub Pages as a set of static files.
 There are two ways to load labels:
 
 1. **Demo data** — click the *Demo data* button in the **Data** panel to load a
-   bundled sample covering several common use cases. (Works when the app is
-   served over HTTP, e.g. on GitHub Pages. Under `file://` fetch is blocked by
-   the browser, so use the drop zone instead.)
+   bundled sample covering several common use cases. (Requires HTTP — see
+   *Run locally*; under `file://` the button fails with `Failed to fetch`, so
+   import `sample.json` via the drop zone instead.)
 2. **Import a JSON file** — drop or pick a `.json` file in the **Data** panel.
 
 The expected JSON shape is one of:

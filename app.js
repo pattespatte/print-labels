@@ -397,6 +397,7 @@
         gridToggle: $("grid-toggle"),
         scaleToggle: $("scale-toggle"),
         formatMeta: $("format-meta"),
+        zoomMeta: $("zoom-meta"),
         preview: $("preview"),
         printBtn: $("print-btn"),
       };
@@ -524,6 +525,7 @@
       });
       UI.el.scaleToggle.addEventListener("change", (e) => {
         state.trueSize = e.target.checked;
+        UI.persist();
         UI.renderPreview();
       });
 
@@ -596,6 +598,14 @@
       });
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && !UI.el.modalBackdrop.hidden) UI.closeModal();
+      });
+
+      // Recompute the preview scale when the pane is resized (debounced). Without
+      // this the fit/true-size ratio goes stale on window resize.
+      let resizeTimer = null;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(UI.renderPreview, 120);
       });
     },
 
@@ -936,16 +946,35 @@
       const pages = Layout.fillSheet(fmt, state.items, state.skipN);
       UI.el.printBtn.disabled = false;
 
-      // Compute screen scale to fit pane width (~assume pane ≈ 760px).
+      // Compute screen scale to fit pane width.
       const paneWpx = host.parentElement.clientWidth - 32;
       const sheetWpx = fmt.pageW_mm * PX_PER_MM;
-      const scale = state.trueSize ? 1 : Math.min(1, paneWpx / sheetWpx);
+      const sheetHpx = fmt.pageH_mm * PX_PER_MM;
+      const fitScale = Math.min(1, paneWpx / sheetWpx);
+      // If the sheet already fits at 1:1, true-size is a no-op. Hide the control
+      // (via the .fits-true toolbar class) rather than show a dead checkbox.
+      const alreadyTrue = fitScale >= 1;
+      const scale = state.trueSize ? 1 : fitScale;
+
+      UI.el.scaleToggle.disabled = alreadyTrue;
+      host.parentElement
+        .querySelector(".preview-toolbar")
+        .classList.toggle("fits-true", alreadyTrue);
+      UI.el.scaleToggle.title = alreadyTrue
+        ? "Sheet already fits at 100% in this pane"
+        : "Show the sheet at 1:1 size (may overflow the pane)";
+      UI.el.zoomMeta.textContent = Math.round(scale * 100) + "%";
 
       pages.forEach((pageSlots, pageIdx) => {
         const wrap = document.createElement("div");
         wrap.className = "sheet-wrap";
-        if (scale < 1) wrap.style.transform = "scale(" + scale + ")";
+        // Size the wrapper to the *scaled* sheet so it occupies exactly the
+        // visible area — no phantom box of whitespace around a shrunken sheet,
+        // and the whole sheet stays visible (left-aligned) on narrow panes.
+        wrap.style.width = sheetWpx * scale + "px";
+        wrap.style.height = sheetHpx * scale + "px";
         const sheet = UI.SheetRender.drawPage(fmt, pageSlots, { grid: state.grid });
+        if (scale < 1) sheet.style.transform = "scale(" + scale + ")";
         wrap.appendChild(sheet);
         host.appendChild(wrap);
         if (pages.length > 1) {
@@ -982,6 +1011,7 @@
             formatId: state.formatId,
             skipN: state.skipN,
             grid: state.grid,
+            trueSize: state.trueSize,
             mapping: state.mapping,
             // items intentionally NOT persisted (may be large)
           })
@@ -999,6 +1029,7 @@
         if (s.formatId && window.FORMATS[s.formatId]) state.formatId = s.formatId;
         if (typeof s.skipN === "number") state.skipN = s.skipN;
         if (typeof s.grid === "boolean") state.grid = s.grid;
+        if (typeof s.trueSize === "boolean") state.trueSize = s.trueSize;
         if (Array.isArray(s.mapping) && s.mapping.length === 4) {
           state.mapping = s.mapping;
         }
@@ -1007,6 +1038,7 @@
       }
       UI.el.skipN.value = state.skipN;
       UI.el.gridToggle.checked = state.grid;
+      UI.el.scaleToggle.checked = state.trueSize;
     },
   };
 
