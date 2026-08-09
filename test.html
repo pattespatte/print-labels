@@ -135,6 +135,41 @@
           assert("imported item uses mapping literal", importedLines[0].text === "WRONG");
           window.PrintLabels.state.mapping = S_old;
 
+          // Template-string literals: `{path}` tokens interpolate via resolvePath.
+          // Missing → empty string; {{ / }} escape to a literal brace.
+          const S_tpl = window.PrintLabels.state.mapping;
+          const tplMap = (literal) => [
+            { path: "name", sizePt: 7, bold: false, literal: literal },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+          ];
+          // Backward compat: literal without braces → verbatim.
+          window.PrintLabels.state.mapping = tplMap("100% off");
+          assert("plain literal unchanged", RL({ raw: { name: "X" } })[0].text === "100% off");
+          // Literal still wins over path; template resolves within the literal.
+          window.PrintLabels.state.mapping = tplMap("Hi {name}");
+          assert("literal+token beats path", RL({ raw: { name: "Jo" } })[0].text === "Hi Jo");
+          // Single token, literal prefix.
+          window.PrintLabels.state.mapping = tplMap("Best by {date}");
+          assert("single token", RL({ raw: { date: "2027-04" } })[0].text === "Best by 2027-04");
+          // Two tokens.
+          window.PrintLabels.state.mapping = tplMap("{first} {last}");
+          assert("two tokens", RL({ raw: { first: "John", last: "Smith" } })[0].text === "John Smith");
+          // Nested path token (whitespace around path is trimmed).
+          window.PrintLabels.state.mapping = tplMap("{ growing.days } days");
+          assert("nested token", RL({ raw: { growing: { days: 14 } } })[0].text === "14 days");
+          // Missing token → empty (not literal).
+          window.PrintLabels.state.mapping = tplMap("Hi {missing}");
+          assert("missing token empty", RL({ raw: { name: "X" } })[0].text === "Hi ");
+          // Escape: {{...}} → literal braces.
+          window.PrintLabels.state.mapping = tplMap("{{not a token}}");
+          assert("escape braces", RL({ raw: {} })[0].text === "{not a token}");
+          // Mixed: real token + escaped brace pair in one string.
+          window.PrintLabels.state.mapping = tplMap("Best by {date} ({{batch}})");
+          assert("token + escape mixed", RL({ raw: { date: "2027-04" } })[0].text === "Best by 2027-04 ({batch})");
+          window.PrintLabels.state.mapping = S_tpl;
+
           // Fields.discoverPaths
           const P = window.PrintLabels.Fields;
           const paths = P.discoverPaths([

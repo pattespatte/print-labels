@@ -163,6 +163,19 @@
     return String(cur);
   }
 
+  // Interpolate `{path}` tokens in a mapping literal against an item's raw data.
+  // Tokens resolve via resolvePath (missing → empty string, not literal).
+  // `{{` and `}}` escape to a literal brace so `{field}` can appear in output.
+  // Strings without `{` hit the fast path and are returned unchanged.
+  function interpolate(tpl, raw) {
+    if (tpl.indexOf("{") === -1) return tpl;
+    return tpl.replace(/\{\{|\}\}|\{([^{}]+)\}/g, (m, token) => {
+      if (m === "{{") return "{";
+      if (m === "}}") return "}";
+      return resolvePath(raw, token.trim());
+    });
+  }
+
   // Resolve a single item into up-to-4 label lines.
   // If the item carries frozen `lines` (manual entry), use them directly and
   // bypass the field mapper — typed text is taken verbatim. Otherwise apply the
@@ -178,7 +191,7 @@
     const raw = item.raw || {};
     return state.mapping.map((m) => {
       let text = "";
-      if (m.literal) text = m.literal;
+      if (m.literal) text = interpolate(m.literal, raw);
       else if (m.path) {
         text = resolvePath(raw, m.path);
       }
@@ -491,7 +504,7 @@
 
         const lit = document.createElement("input");
         lit.type = "text";
-        lit.placeholder = "literal text";
+        lit.placeholder = "literal or {field}";
         lit.value = m.literal;
         lit.dataset.idx = idx;
         lit.dataset.kind = "literal";
