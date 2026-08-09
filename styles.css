@@ -342,6 +342,11 @@ button.danger.primary:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
+}
+.item-row .name:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 .item-row input[type="number"] {
   padding: 3px 5px;

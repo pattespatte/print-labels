@@ -832,7 +832,15 @@
     // A manual item stores frozen `lines: [{text,sizePt,bold}]`. Line 1 is bold
     // and slightly larger by default, mirroring the plant preset. These bypass
     // the field mapper (typed text is taken verbatim).
-    openEditor(lines, qty) {
+    //
+    // Called with no args → add mode (new item). Called with lines + qty →
+    // pre-fill for either add or edit. `editIndex` (optional) switches the
+    // editor into edit mode: the save button reads "Save" and the saved item
+    // replaces state.items[editIndex] instead of being pushed. Imported items
+    // passed in as pre-resolved lines become a frozen-lines override on save
+    // (resolveLines bypasses the mapper for items carrying `lines`).
+    _editIndex: null,
+    openEditor(lines, qty, editIndex) {
       const editor = UI.el.itemEditor;
       editor.hidden = false;
       const inputs = editor.querySelectorAll('input[data-line]');
@@ -847,11 +855,15 @@
         inp.value = (src[i] && src[i].text) || "";
       });
       UI.el.editorQty.value = qty || 1;
+      UI._editIndex = typeof editIndex === "number" ? editIndex : null;
+      UI.el.editorSave.textContent = UI._editIndex === null ? "Add" : "Save";
       inputs[0].focus();
     },
 
     closeEditor() {
       UI.el.itemEditor.hidden = true;
+      UI._editIndex = null;
+      UI.el.editorSave.textContent = "Add";
     },
 
     saveManualItem() {
@@ -869,7 +881,18 @@
         return;
       }
       const qty = Math.max(1, parseInt(UI.el.editorQty.value, 10) || 1);
-      state.items.push({ lines, qty, selected: true });
+      if (UI._editIndex !== null && state.items[UI._editIndex]) {
+        // Edit-in-place: replace the item but keep its selected flag so the
+        // preview doesn't silently drop an item the user had ticked.
+        const prev = state.items[UI._editIndex];
+        prev.lines = lines;
+        prev.qty = qty;
+        // A frozen-lines override means the item no longer needs its raw
+        // data — drop it so Project.serialize/round-trip stays clean.
+        delete prev.raw;
+      } else {
+        state.items.push({ lines, qty, selected: true });
+      }
       UI.closeEditor();
       UI.renderItems();
       UI.renderPreview();
@@ -1030,7 +1053,14 @@
         const name = document.createElement("div");
         name.className = "name";
         name.textContent = UI.itemLabel(it, idx);
-        name.title = it.lines ? "Manual entry" : "Imported";
+        name.title = it.lines ? "Manual entry — click to edit" : "Imported — click to edit";
+        // Click the label text to edit in place. Manual items edit their frozen
+        // lines directly; imported items get their resolved lines pre-filled, so
+        // saving creates a frozen-lines override (resolveLines then bypasses the
+        // mapper for this item).
+        name.addEventListener("click", () => {
+          UI.openEditor(resolveLines(it), it.qty, idx);
+        });
         const qty = document.createElement("input");
         qty.type = "number";
         qty.min = "1";

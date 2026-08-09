@@ -135,6 +135,40 @@
           assert("imported item uses mapping literal", importedLines[0].text === "WRONG");
           window.PrintLabels.state.mapping = S_old;
 
+          // Edit-in-place (P1-4): editing an imported item assigns frozen
+          // `lines` (a verbatim override) and drops `raw`. resolveLines must
+          // then return those lines directly, bypassing the mapper — even when
+          // the mapper is later changed. This is the invariant saveManualItem
+          // relies on when _editIndex is set.
+          const editItem = { raw: { name: "Original" }, qty: 1, selected: true };
+          const S_edit = window.PrintLabels.state.mapping;
+          // Set a mapping that resolves name → "Original" so the prefill is
+          // predictable (test.html doesn't call UI.init, so the default
+          // mapping is empty and would otherwise yield blank lines here).
+          window.PrintLabels.state.mapping = [
+            { path: "name", sizePt: 7, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+          ];
+          const prefill = RL(editItem);
+          // Simulate what saveManualItem does: assign frozen lines (verbatim
+          // override) and drop raw.
+          editItem.lines = prefill.map((ln) => ({ text: ln.text + "!", sizePt: ln.sizePt, bold: ln.bold }));
+          delete editItem.raw;
+          // Switch to a conflicting mapping; the override must still win.
+          window.PrintLabels.state.mapping = [
+            { path: "", sizePt: 7, bold: false, literal: "SHOULD NOT APPEAR" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "", sizePt: 6, bold: false, literal: "" },
+          ];
+          const overridden = RL(editItem);
+          assert("edited imported item keeps frozen lines (override)", overridden[0].text === "Original!");
+          assert("edited imported item ignores mapping", overridden[0].text !== "SHOULD NOT APPEAR");
+          assert("edited imported item has no raw", editItem.raw === undefined);
+          window.PrintLabels.state.mapping = S_edit;
+
           // Template-string literals: `{path}` tokens interpolate via resolvePath.
           // Missing → empty string; {{ / }} escape to a literal brace.
           const S_tpl = window.PrintLabels.state.mapping;
