@@ -281,6 +281,17 @@ button.danger.primary:hover {
   line-height: 1.4;
 }
 
+/* Print-settings checklist — shown only when the calibration grid is on. */
+.print-checklist {
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-weak);
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
 /* Drop zone — a clean rectangle; the inner <label> is the click target */
 #drop-zone {
   border: 2px dashed var(--line-strong);

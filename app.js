@@ -523,6 +523,7 @@
         zoomMeta: $("zoom-meta"),
         preview: $("preview"),
         printBtn: $("print-btn"),
+        printChecklist: $("print-checklist"),
       };
       UI.loadPersisted();
       UI.buildFormatSelect();
@@ -658,6 +659,7 @@
       });
       UI.el.gridToggle.addEventListener("change", (e) => {
         state.grid = e.target.checked;
+        UI.el.printChecklist.hidden = !state.grid;
         UI.persist();
         UI.renderPreview();
       });
@@ -1225,6 +1227,7 @@
       }
       UI.el.skipN.value = state.skipN;
       UI.el.gridToggle.checked = state.grid;
+      UI.el.printChecklist.hidden = !state.grid;
       UI.el.scaleToggle.checked = state.trueSize;
       UI.el.offsetX.value = state.offsetX;
       UI.el.offsetY.value = state.offsetY;
