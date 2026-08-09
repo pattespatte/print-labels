@@ -180,6 +180,38 @@
           assert("discoverPaths finds array[0]", paths.indexOf("arr[0].d") !== -1);
           assert("discoverPaths skips empty", paths.indexOf("empty") === -1);
 
+          // parseCSV: RFC-4180-lite, header normalization, delimiter detection.
+          const PC = window.PrintLabels.parseCSV;
+          let csv = PC("a,b\n1,2\n3,4", ",");
+          assert("csv basic headers", csv.headers.length === 2 && csv.headers[0] === "a" && csv.headers[1] === "b");
+          assert("csv basic rows", csv.rows.length === 2 && csv.rows[0].a === "1" && csv.rows[0].b === "2" && csv.rows[1].a === "3");
+          // Header normalization: spaces/dashes → "_", lowercased.
+          csv = PC("Best Before,Item-Name\nx,y", ",");
+          assert("csv normalizes headers", csv.headers[0] === "best_before" && csv.headers[1] === "item_name" && csv.rows[0].best_before === "x");
+          // Auto-detect: comma, semicolon, tab each win on their own input.
+          assert("csv auto comma", PC("a,b\n1,2", "").rows[0].a === "1");
+          assert("csv auto semicolon", PC("a;b\n1;2", "").rows[0].a === "1");
+          assert("csv auto tab", PC("a\tb\n1\t2", "").rows[0].a === "1");
+          // Quoted field with embedded delimiter.
+          csv = PC('a,b\n"hi, there",2', ",");
+          assert("csv quoted comma", csv.rows[0].a === "hi, there" && csv.rows[0].b === "2");
+          // Escaped quote inside quoted field.
+          csv = PC('a\n"she said ""hi"""', ",");
+          assert("csv escaped quote", csv.rows[0].a === 'she said "hi"');
+          // Quoted field spanning a newline.
+          csv = PC('a,b\n"line1\nline2",2', ",");
+          assert("csv quoted newline", csv.rows[0].a === "line1\nline2" && csv.rows[0].b === "2");
+          // Short row padded; trailing empty line dropped.
+          csv = PC("a,b\n1\n", ",");
+          assert("csv short row padded + trailing blank dropped", csv.rows.length === 1 && csv.rows[0].a === "1" && csv.rows[0].b === "");
+          // Duplicate headers get _2, _3 suffixes.
+          csv = PC("a,a\n1,2", ",");
+          assert("csv dedup headers", csv.headers[0] === "a" && csv.headers[1] === "a_2" && csv.rows[0].a === "1" && csv.rows[0].a_2 === "2");
+          // Empty / no-data input throws.
+          let threw = false;
+          try { PC("", ","); } catch (e) { threw = true; }
+          assert("csv empty throws", threw);
+
           // Project round-trip
           const Proj = window.PrintLabels.Project;
           const S = window.PrintLabels.state;

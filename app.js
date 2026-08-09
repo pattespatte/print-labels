@@ -176,6 +176,97 @@
     });
   }
 
+  // Parse pasted CSV/TSV into { headers, rows }. RFC-4180-lite: handles
+  // quoted fields ("…"), escaped quotes ("") and embedded newlines/commas.
+  // `delim` is one of ",", ";", "\t", or "" for auto-detect (counts
+  // candidates in the first non-empty line; tie-break , > ; > tab; fallback ",").
+  // Headers are normalized (lowercase, runs of space/dash → "_") and deduped
+  // ("a","a" → "a","a_2"). Cells stay strings — no type coercion, since
+  // resolvePath returns String(...) downstream anyway.
+  function parseCSV(text, delim) {
+    const src = String(text == null ? "" : text).replace(/\r\n?/g, "\n");
+    // Decide delimiter.
+    let d = delim;
+    if (!d) {
+      const firstLine = (src.split("\n", 1)[0] || "");
+      const counts = {
+        ",": (firstLine.match(/,/g) || []).length,
+        ";": (firstLine.match(/;/g) || []).length,
+        "\t": (firstLine.match(/\t/g) || []).length,
+      };
+      const best = ["", ",", ";", "\t"]
+        .filter((k) => counts[k] > 0)
+        .sort((a, b) => counts[b] - counts[a])[0];
+      d = best || ",";
+    }
+    // State-machine row split (handles quotes spanning newlines).
+    const rows = [];
+    let row = [];
+    let field = "";
+    let inQuotes = false;
+    for (let i = 0; i < src.length; i++) {
+      const ch = src[i];
+      if (inQuotes) {
+        if (ch === '"') {
+          if (src[i + 1] === '"') {
+            field += '"';
+            i++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          field += ch;
+        }
+      } else {
+        if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === d) {
+          row.push(field);
+          field = "";
+        } else if (ch === "\n") {
+          row.push(field);
+          rows.push(row);
+          row = [];
+          field = "";
+        } else {
+          field += ch;
+        }
+      }
+    }
+    // Flush trailing field/row if any content remains.
+    if (field !== "" || row.length > 0) {
+      row.push(field);
+      rows.push(row);
+    }
+    // Drop fully-empty trailing rows (e.g. final blank line).
+    const nonEmpty = rows.filter((r) => r.some((c) => c !== ""));
+    if (nonEmpty.length === 0) {
+      throw new Error("No rows found.");
+    }
+    const rawHeaders = nonEmpty[0];
+    if (rawHeaders.length === 0) {
+      throw new Error("No header columns found.");
+    }
+    // Normalize + dedupe headers.
+    const seen = Object.create(null);
+    const headers = rawHeaders.map((h) => {
+      const norm = h.trim().toLowerCase().replace(/[\s\-]+/g, "_");
+      let key = norm || "_";
+      let n = 2;
+      while (seen[key]) key = norm + "_" + n++;
+      seen[key] = true;
+      return key;
+    });
+    const dataRows = nonEmpty.slice(1).map((cells) => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = cells[i] !== undefined ? cells[i] : "";
+      });
+      return obj;
+    });
+    return { headers, rows: dataRows };
+  }
+
   // Resolve a single item into up-to-4 label lines.
   // If the item carries frozen `lines` (manual entry), use them directly and
   // bypass the field mapper — typed text is taken verbatim. Otherwise apply the
@@ -415,6 +506,13 @@
         modalBody: $("modal-body"),
         modalCancel: $("modal-cancel"),
         modalConfirm: $("modal-confirm"),
+        csvBtn: $("csv-btn"),
+        csvModalBackdrop: $("csv-modal-backdrop"),
+        csvArea: $("csv-area"),
+        csvDelimiter: $("csv-delimiter"),
+        csvStatus: $("csv-status"),
+        csvCancel: $("csv-cancel"),
+        csvImport: $("csv-import"),
         formatSelect: $("format-select"),
         skipN: $("skip-n"),
         gridToggle: $("grid-toggle"),
@@ -589,6 +687,12 @@
 
       UI.el.exportBtn.addEventListener("click", () => Project.download());
       UI.el.demoBtn.addEventListener("click", UI.loadDemo);
+      UI.el.csvBtn.addEventListener("click", UI.openCsvModal);
+      UI.el.csvImport.addEventListener("click", UI.importCsv);
+      UI.el.csvCancel.addEventListener("click", UI.closeCsvModal);
+      UI.el.csvModalBackdrop.addEventListener("click", (e) => {
+        if (e.target === UI.el.csvModalBackdrop) UI.closeCsvModal();
+      });
 
       UI.el.selectAll.addEventListener("click", () => {
         state.items.forEach((i) => (i.selected = true));
@@ -632,7 +736,10 @@
         if (e.target === UI.el.modalBackdrop) UI.closeModal();
       });
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && !UI.el.modalBackdrop.hidden) UI.closeModal();
+        if (e.key === "Escape") {
+          if (!UI.el.modalBackdrop.hidden) UI.closeModal();
+          else if (!UI.el.csvModalBackdrop.hidden) UI.closeCsvModal();
+        }
       });
 
       // Recompute the preview scale when the pane is resized (debounced). Without
@@ -665,6 +772,36 @@
     closeModal() {
       UI.el.modalBackdrop.hidden = true;
       UI._modalOnConfirm = null;
+    },
+
+    // --- CSV/TSV paste import modal (separate from the confirm modal) ---
+    openCsvModal() {
+      UI.el.csvArea.value = "";
+      UI.el.csvDelimiter.value = "";
+      UI.el.csvStatus.textContent = "";
+      UI.el.csvStatus.style.color = "";
+      UI.el.csvModalBackdrop.hidden = false;
+      UI.el.csvArea.focus();
+    },
+
+    closeCsvModal() {
+      UI.el.csvModalBackdrop.hidden = true;
+    },
+
+    importCsv() {
+      const text = UI.el.csvArea.value;
+      const delim = UI.el.csvDelimiter.value;
+      try {
+        const parsed = parseCSV(text, delim);
+        if (parsed.rows.length === 0) {
+          throw new Error("Only a header row found — no data rows.");
+        }
+        UI.closeCsvModal();
+        UI.ingestData(parsed.rows, "pasted CSV");
+      } catch (err) {
+        UI.el.csvStatus.textContent = "Could not parse: " + err.message;
+        UI.el.csvStatus.style.color = "var(--danger)";
+      }
     },
 
     clearAll() {
@@ -1095,5 +1232,5 @@
   document.addEventListener("DOMContentLoaded", UI.init);
 
   // Expose for debugging and for the unit test page.
-  window.PrintLabels = { Layout, Fields, Project, UI, state, resolveLines };
+  window.PrintLabels = { Layout, Fields, Project, UI, state, resolveLines, parseCSV };
 })();

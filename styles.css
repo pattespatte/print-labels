@@ -131,7 +131,8 @@ section.panel h2 {
 
 select,
 input[type="number"],
-input[type="text"] {
+input[type="text"],
+textarea {
   width: 100%;
   padding: 6px 8px;
   border: 1px solid var(--line);
@@ -204,6 +205,20 @@ button.danger.primary:hover {
 #modal-backdrop[hidden] {
   display: none;
 }
+
+/* CSV paste modal backdrop — same centering as #modal-backdrop. */
+#csv-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+#csv-modal-backdrop[hidden] {
+  display: none;
+}
 #modal {
   background: var(--panel);
   border-radius: 8px;
@@ -221,6 +236,33 @@ button.danger.primary:hover {
   font-size: 13px;
   color: var(--muted);
   line-height: 1.4;
+}
+
+/* CSV/TSV paste modal — same shell as #modal, wider to fit pasted rows. */
+#csv-modal {
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 560px;
+  width: calc(100% - 32px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+#csv-modal h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+#csv-modal p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+/* Pasted data: monospace so columns line up while reviewing. */
+#csv-area {
+  width: 100%;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  resize: vertical;
 }
 
 .row {

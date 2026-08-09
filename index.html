@@ -24,6 +24,7 @@
           </div>
           <div class="row" style="margin-top: 10px; gap: 8px">
             <button id="demo-btn" type="button">Demo data</button>
+            <button id="csv-btn" type="button">Paste CSV/TSV</button>
             <button id="export-btn" class="primary" disabled>Export project</button>
           </div>
           <p id="io-status" class="hint"></p>
@@ -135,6 +136,33 @@
         <div class="row" style="justify-content: flex-end; gap: 8px">
           <button id="modal-cancel" type="button">Cancel</button>
           <button id="modal-confirm" type="button" class="danger">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSV/TSV paste import modal (separate from the confirm modal: holds a
+         textarea + delimiter select, wider). -->
+    <div id="csv-modal-backdrop" hidden>
+      <div id="csv-modal" role="dialog" aria-modal="true" aria-labelledby="csv-modal-title">
+        <h3 id="csv-modal-title">Paste CSV / TSV</h3>
+        <p class="hint">First row = column headers. Each later row = one label.</p>
+        <label class="field">
+          <span>Delimiter</span>
+          <select id="csv-delimiter">
+            <option value="">Auto-detect</option>
+            <option value=",">Comma (,)</option>
+            <option value=";">Semicolon (;)</option>
+            <option value="&#09;">Tab</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Data</span>
+          <textarea id="csv-area" rows="8" placeholder="Name,Best before,Notes&#10;Sourdough,2027-04,Fridge"></textarea>
+        </label>
+        <p id="csv-status" class="hint"></p>
+        <div class="row" style="justify-content: flex-end; gap: 8px">
+          <button id="csv-cancel" type="button">Cancel</button>
+          <button id="csv-import" type="button" class="primary">Import</button>
         </div>
       </div>
     </div>
