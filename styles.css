@@ -92,28 +92,41 @@ section.panel h2 {
   margin: 0 0 10px;
 }
 
-label.field {
+.field {
   display: block;
   font-size: 12px;
   margin-bottom: 6px;
   color: var(--muted);
 }
-label.field > span {
+.field > span {
   display: block;
   margin-bottom: 3px;
 }
 /* Inline checkbox + label (toolbar toggles). Inline-styled in HTML originally;
    moved to a class so a stylesheet rule can override `display` to hide it. */
-label.field.inline-toggle {
+.field.inline-toggle {
   display: inline-flex;
   flex-direction: row;
   align-items: center;
   gap: 6px;
   margin: 0;
 }
-label.field.inline-toggle > span {
+.field.inline-toggle > span {
   display: inline;
   margin-bottom: 0;
+}
+
+/* Heading kept in the DOM for a11y/screen readers but hidden visually. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 select,

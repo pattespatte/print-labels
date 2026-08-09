@@ -757,6 +757,8 @@
       // Recognize a saved project file (round-trip with Export).
       if (parsed && parsed._type === PROJECT_TYPE) {
         Project.load(parsed);
+        // Project.load may change formatId; keep the <select> in sync.
+        UI.el.formatSelect.value = state.formatId;
         UI.el.ioStatus.textContent =
           "Loaded project: " + state.items.length + " items.";
         UI.el.ioStatus.style.color = "var(--accent)";
