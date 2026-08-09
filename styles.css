@@ -326,6 +326,25 @@ button.danger.primary:hover {
   border: 1px solid var(--line);
   border-radius: 4px;
 }
+/* Search / sort / only-selected — a compact row above the list. The search
+   box is the widest content, so it takes the leftover space. */
+.items-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.items-controls #item-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.items-controls #item-sort {
+  flex: 0 0 auto;
+}
+.items-controls .inline-toggle {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
 .item-row {
   display: grid;
   grid-template-columns: auto 1fr 52px 24px;

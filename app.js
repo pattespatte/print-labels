@@ -100,6 +100,9 @@
     offsetX: 0, // per-printer calibration offset, mm (signed)
     offsetY: 0,
     fields: [], // discovered paths
+    // View-only filters for the items list (never mutate state.items).
+    // Transient — not persisted: a fresh reload should show everything.
+    itemsView: { search: "", sort: "import", onlySelected: false },
   };
 
   function emptyMapping() {
@@ -496,6 +499,9 @@
         clearMapping: $("clear-mapping"),
         addItem: $("add-item"),
         clearAll: $("clear-all"),
+        itemSearch: $("item-search"),
+        itemSort: $("item-sort"),
+        onlySelected: $("only-selected"),
         itemEditor: $("item-editor"),
         editorSave: $("editor-save"),
         editorCancel: $("editor-cancel"),
@@ -711,6 +717,23 @@
         state.items.forEach((i) => (i.selected = false));
         UI.renderItems();
         UI.renderPreview();
+      });
+
+      // Item-list view filters (search / sort / only-selected). These are
+      // view-only: they change which rows render and in what order, never
+      // state.items itself, so edit/remove indices stay valid. Re-rendering
+      // the list is cheap and doesn't affect the print preview.
+      UI.el.itemSearch.addEventListener("input", (e) => {
+        state.itemsView.search = e.target.value;
+        UI.renderItems();
+      });
+      UI.el.itemSort.addEventListener("change", (e) => {
+        state.itemsView.sort = e.target.value;
+        UI.renderItems();
+      });
+      UI.el.onlySelected.addEventListener("change", (e) => {
+        state.itemsView.onlySelected = e.target.checked;
+        UI.renderItems();
       });
 
       UI.el.presetPlant.addEventListener("click", UI.applyAutoMapping);
@@ -1041,7 +1064,37 @@
         host.innerHTML = '<p class="status-msg" style="padding:16px">No items loaded.</p>';
         return;
       }
-      state.items.forEach((it, idx) => {
+      // Build a view list of { item, idx, label } and apply the current
+      // view filters (only-selected, search, sort) to it — never to
+      // state.items itself. Each row keeps its original idx so edit-in-place
+      // and remove still target the right item regardless of filter/sort.
+      const v = state.itemsView;
+      let view = state.items.map((item, idx) => ({
+        item,
+        idx,
+        label: UI.itemLabel(item, idx),
+      }));
+      if (v.onlySelected) {
+        view = view.filter((e) => e.item.selected);
+      }
+      if (v.search) {
+        const needle = v.search.toLowerCase();
+        view = view.filter((e) => e.label.toLowerCase().indexOf(needle) !== -1);
+      }
+      if (v.sort === "az") {
+        // localeCompare gives intuitive A→Z across accents/locales; the
+        // spread copy keeps Array.prototype.sort from mutating the view
+        // in place (harmless here, but keeps the pattern clean).
+        view = [...view].sort((a, b) => a.label.localeCompare(b.label));
+      }
+      if (view.length === 0) {
+        host.innerHTML =
+          '<p class="status-msg" style="padding:16px">No items match the current filter.</p>';
+        return;
+      }
+      view.forEach((entry) => {
+        const it = entry.item;
+        const idx = entry.idx;
         const row = document.createElement("div");
         row.className = "item-row";
         const cb = document.createElement("input");
@@ -1050,10 +1103,13 @@
         cb.addEventListener("change", (e) => {
           it.selected = e.target.checked;
           UI.renderPreview();
+          // If "only selected" is active, a deselect should drop the row
+          // from view immediately rather than linger as an unticked row.
+          if (state.itemsView.onlySelected) UI.renderItems();
         });
         const name = document.createElement("div");
         name.className = "name";
-        name.textContent = UI.itemLabel(it, idx);
+        name.textContent = entry.label;
         name.title = it.lines ? "Manual entry — click to edit" : "Imported — click to edit";
         // Click the label text to edit in place. Manual items edit their frozen
         // lines directly; imported items get their resolved lines pre-filled, so

@@ -39,6 +39,17 @@
             <button id="add-item" type="button">+ Add label</button>
             <button id="clear-all" type="button" class="danger">Clear all</button>
           </div>
+          <div class="items-controls">
+            <input type="search" id="item-search" placeholder="Search items…" aria-label="Search items" />
+            <select id="item-sort" aria-label="Sort items">
+              <option value="import">Sort: import order</option>
+              <option value="az">Sort: A→Z</option>
+            </select>
+            <label class="field inline-toggle">
+              <input type="checkbox" id="only-selected" />
+              <span>Only selected</span>
+            </label>
+          </div>
           <div id="item-editor" hidden>
             <div class="editor-row">
               <input type="text" data-line="0" placeholder="Line 1 (bold, largest)" />
