@@ -128,6 +128,16 @@ input[type="text"] {
   color: var(--ink);
 }
 
+/* X/Y calibration inputs share one labelled row. */
+.offset-row {
+  display: flex;
+  gap: 6px;
+}
+.offset-row input {
+  flex: 1;
+  min-width: 0;
+}
+
 button {
   padding: 7px 12px;
   border: 1px solid var(--line-strong);

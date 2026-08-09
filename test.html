@@ -52,6 +52,21 @@
           p = L.slotPosition(fmt5027, 1);
           assert("5027 slot 1 x = 49.5 (manual pitchX)", approx(p.x_mm, 10.0 + 39.5), "got " + p.x_mm);
 
+          // Calibration offsets: optional 3rd arg { x, y } shifts every slot.
+          // Omitting it (backward compat) leaves positions unchanged.
+          p = L.slotPosition(fmt5027, 0);
+          assert("5027 slot 0 no offsets still x = 10.0", approx(p.x_mm, 10.0), "got " + p.x_mm);
+          p = L.slotPosition(fmt5027, 0, { x: 2, y: -1 });
+          assert("5027 slot 0 +offset(2,-1) x = 12.0", approx(p.x_mm, 12.0), "got " + p.x_mm);
+          assert("5027 slot 0 +offset(2,-1) y = 5.0", approx(p.y_mm, 5.0), "got " + p.y_mm);
+          // Offset applies uniformly to every slot, not just slot 0.
+          p = L.slotPosition(fmt5027, 5, { x: 2, y: -1 });
+          assert("5027 slot 5 +offset(2,-1) x = 12.0", approx(p.x_mm, 12.0), "got " + p.x_mm);
+          assert("5027 slot 5 +offset(2,-1) y = 26.2", approx(p.y_mm, 6.0 + 21.2 - 1), "got " + p.y_mm);
+          // Offset composes with the existing pitchX override (slot 1 → 49.5 + 2).
+          p = L.slotPosition(fmt5027, 1, { x: 2, y: 0 });
+          assert("5027 slot 1 +offset(2,0) x = 51.5", approx(p.x_mm, 10.0 + 39.5 + 2), "got " + p.x_mm);
+
           // 4336 manual pitch overrides
           const fmt4336 = F["4336"];
           p = L.slotPosition(fmt4336, 1);

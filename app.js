@@ -31,7 +31,10 @@
       return Math.floor(slotIndex / Layout.slotsPerPage(format));
     },
     // Top-left corner of a slot, in mm, relative to the page origin (top-left).
-    slotPosition(format, slotIndex) {
+    // Optional `offsets` ({ x, y } in mm) shifts every slot uniformly — used for
+    // per-printer calibration. Omit for the unshifted position.
+    slotPosition(format, slotIndex, offsets) {
+      const off = offsets || { x: 0, y: 0 };
       const perPage = Layout.slotsPerPage(format);
       const indexOnPage = slotIndex % perPage;
       const col = indexOnPage % format.cols;
@@ -39,8 +42,8 @@
       const pitchX = format.pitchX_mm ?? format.labelW_mm;
       const pitchY = format.pitchY_mm ?? format.labelH_mm;
       return {
-        x_mm: format.marginLeft_mm + col * pitchX,
-        y_mm: format.marginTop_mm + row * pitchY,
+        x_mm: format.marginLeft_mm + col * pitchX + off.x,
+        y_mm: format.marginTop_mm + row * pitchY + off.y,
       };
     },
     // Expand selected items by quantity into a flat list of full item objects.
@@ -94,6 +97,8 @@
     skipN: 0,
     grid: false,
     trueSize: false,
+    offsetX: 0, // per-printer calibration offset, mm (signed)
+    offsetY: 0,
     fields: [], // discovered paths
   };
 
@@ -193,6 +198,8 @@
         formatId: state.formatId,
         skipN: state.skipN,
         grid: state.grid,
+        offsetX: state.offsetX,
+        offsetY: state.offsetY,
         mapping: JSON.parse(JSON.stringify(state.mapping)),
         items: state.items.map((i) => {
           const out = { qty: i.qty, selected: i.selected };
@@ -215,6 +222,8 @@
       if (window.FORMATS[parsed.formatId]) state.formatId = parsed.formatId;
       state.skipN = Math.max(0, parseInt(parsed.skipN, 10) || 0);
       state.grid = !!parsed.grid;
+      if (typeof parsed.offsetX === "number") state.offsetX = parsed.offsetX;
+      if (typeof parsed.offsetY === "number") state.offsetY = parsed.offsetY;
       if (Array.isArray(parsed.mapping) && parsed.mapping.length === 4) {
         state.mapping = parsed.mapping.map((m) => ({
           path: m.path || "",
@@ -343,9 +352,10 @@
         sheet.className = "sheet";
         sheet.style.width = format.pageW_mm + "mm";
         sheet.style.height = format.pageH_mm + "mm";
+        const offsets = { x: opts.offsetX || 0, y: opts.offsetY || 0 };
         for (let i = 0; i < pageSlots.length; i++) {
           const item = pageSlots[i];
-          const pos = Layout.slotPosition(format, i);
+          const pos = Layout.slotPosition(format, i, offsets);
           // resolveLines takes the full item (handles frozen lines OR raw+mapping).
           const label = item === null ? null : { lines: resolveLines(item) };
           // draw() appends a .label to a parent; we create a positioned wrapper.
@@ -396,6 +406,8 @@
         skipN: $("skip-n"),
         gridToggle: $("grid-toggle"),
         scaleToggle: $("scale-toggle"),
+        offsetX: $("offset-x"),
+        offsetY: $("offset-y"),
         formatMeta: $("format-meta"),
         zoomMeta: $("zoom-meta"),
         preview: $("preview"),
@@ -515,6 +527,16 @@
       });
       UI.el.skipN.addEventListener("change", (e) => {
         state.skipN = Math.max(0, parseInt(e.target.value, 10) || 0);
+        UI.persist();
+        UI.renderPreview();
+      });
+      UI.el.offsetX.addEventListener("change", (e) => {
+        state.offsetX = parseFloat(e.target.value) || 0;
+        UI.persist();
+        UI.renderPreview();
+      });
+      UI.el.offsetY.addEventListener("change", (e) => {
+        state.offsetY = parseFloat(e.target.value) || 0;
         UI.persist();
         UI.renderPreview();
       });
@@ -973,7 +995,11 @@
         // and the whole sheet stays visible (left-aligned) on narrow panes.
         wrap.style.width = sheetWpx * scale + "px";
         wrap.style.height = sheetHpx * scale + "px";
-        const sheet = UI.SheetRender.drawPage(fmt, pageSlots, { grid: state.grid });
+        const sheet = UI.SheetRender.drawPage(fmt, pageSlots, {
+          grid: state.grid,
+          offsetX: state.offsetX,
+          offsetY: state.offsetY,
+        });
         if (scale < 1) sheet.style.transform = "scale(" + scale + ")";
         wrap.appendChild(sheet);
         host.appendChild(wrap);
@@ -1012,6 +1038,8 @@
             skipN: state.skipN,
             grid: state.grid,
             trueSize: state.trueSize,
+            offsetX: state.offsetX,
+            offsetY: state.offsetY,
             mapping: state.mapping,
             // items intentionally NOT persisted (may be large)
           })
@@ -1030,6 +1058,8 @@
         if (typeof s.skipN === "number") state.skipN = s.skipN;
         if (typeof s.grid === "boolean") state.grid = s.grid;
         if (typeof s.trueSize === "boolean") state.trueSize = s.trueSize;
+        if (typeof s.offsetX === "number") state.offsetX = s.offsetX;
+        if (typeof s.offsetY === "number") state.offsetY = s.offsetY;
         if (Array.isArray(s.mapping) && s.mapping.length === 4) {
           state.mapping = s.mapping;
         }
@@ -1039,6 +1069,8 @@
       UI.el.skipN.value = state.skipN;
       UI.el.gridToggle.checked = state.grid;
       UI.el.scaleToggle.checked = state.trueSize;
+      UI.el.offsetX.value = state.offsetX;
+      UI.el.offsetY.value = state.offsetY;
     },
   };
 

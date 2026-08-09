@@ -89,9 +89,16 @@
             <span>Skip first N labels (reuse partial sheet)</span>
             <input type="number" id="skip-n" min="0" value="0" />
           </label>
-          <label class="field" style="flex-direction: row; align-items: center; gap: 6px">
+          <label class="field inline-toggle">
             <input type="checkbox" id="grid-toggle" />
             <span>Calibration grid (outline every label)</span>
+          </label>
+          <label class="field">
+            <span>Calibration offset X / Y (mm) — nudge every label</span>
+            <div class="offset-row">
+              <input type="number" id="offset-x" value="0" step="0.1" min="-10" max="10" />
+              <input type="number" id="offset-y" value="0" step="0.1" min="-10" max="10" />
+            </div>
           </label>
           <p class="hint">
             Print tip: set paper size A4, margins to None, and turn off headers/footers.
