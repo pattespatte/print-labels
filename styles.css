@@ -509,6 +509,19 @@ section.preview-pane {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Wrap mode: let a line break across up to 2 lines, then ellipsize. Uses
+   -webkit-line-clamp for the bounded 2-line truncation the spec asks for;
+   the standard `display: -webkit-box` + `box-orient` pair is what makes the
+   clamp apply. Falls back to plain wrapping (still bounded by the label's
+   overflow:hidden) where line-clamp is unsupported. */
+.label .line.wrap {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
 .label.empty {
   border-style: dashed;
 }

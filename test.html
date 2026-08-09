@@ -246,15 +246,54 @@
           try { PC("", ","); } catch (e) { threw = true; }
           assert("csv empty throws", threw);
 
+          // fitText maxLines (P2-3): wrap mode budgets 2× the label width so
+          // a long string keeps a larger font than nowrap, which must shrink
+          // or truncate to one line. Both modes are bounded.
+          const FT = window.PrintLabels.UI.LabelRender.fitText;
+          // Clear the measurement cache so earlier runs don't mask changes.
+          window.PrintLabels.UI.LabelRender._cache = new Map();
+          const longText = "A very long address that should wrap or truncate";
+          const W = 30; // mm budget per line
+          const oneLine = FT(longText, 7, false, W, 1);
+          const twoLines = FT(longText, 7, false, W, 2);
+          // nowrap: either shrank below 7pt or was truncated with an ellipsis.
+          assert("fitText nowrap fits one line (size or truncation)",
+            oneLine.sizePt < 7 || oneLine.text.slice(-1) === "…");
+          // wrap: the 2-line budget is more generous, so the kept font is at
+          // least as large as the one-line result.
+          assert("fitText wrap keeps font ≥ nowrap", twoLines.sizePt >= oneLine.sizePt);
+          // wrap never char-truncates (the CSS clamp handles overflow); only
+          // nowrap produces an ellipsis from fitText.
+          assert("fitText wrap keeps full text", twoLines.text === longText);
+          // A short string that already fits one line is unchanged by wrap.
+          assert("fitText short text unchanged by wrap",
+            FT("Hi", 6, false, W, 1).sizePt === FT("Hi", 6, false, W, 2).sizePt);
+
+          // resolveLines carries the per-line `wrap` flag through for both
+          // frozen (manual) lines and mapper-driven lines.
+          const RL2 = window.PrintLabels.resolveLines;
+          const frozenWrap = { lines: [{ text: "x", sizePt: 6, bold: false, wrap: true }], qty: 1, selected: true };
+          assert("resolveLines carries wrap on frozen lines", RL2(frozenWrap)[0].wrap === true);
+          const S_wrap = window.PrintLabels.state.mapping;
+          window.PrintLabels.state.mapping = [
+            { path: "name", sizePt: 7, bold: false, literal: "", wrap: true },
+            { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
+            { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
+            { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
+          ];
+          assert("resolveLines carries wrap on mapped lines",
+            RL2({ raw: { name: "Y" } })[0].wrap === true && RL2({ raw: { name: "Y" } })[1].wrap === false);
+          window.PrintLabels.state.mapping = S_wrap;
+
           // Project round-trip
           const Proj = window.PrintLabels.Project;
           const S = window.PrintLabels.state;
           S.items = [{ raw: { plant_name_swedish: "Z" }, qty: 4, selected: true }];
           S.mapping = [
-            { path: "plant_name_swedish", sizePt: 8, bold: true, literal: "" },
-            { path: "", sizePt: 6, bold: false, literal: "" },
-            { path: "", sizePt: 6, bold: false, literal: "hi" },
-            { path: "", sizePt: 6, bold: false, literal: "" },
+            { path: "plant_name_swedish", sizePt: 8, bold: true, literal: "", wrap: false },
+            { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
+            { path: "", sizePt: 6, bold: false, literal: "hi", wrap: false },
+            { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
           ];
           S.formatId = "4336";
           S.skipN = 7;

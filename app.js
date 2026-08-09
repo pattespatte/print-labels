@@ -107,10 +107,10 @@
 
   function emptyMapping() {
     return [
-      { path: "", sizePt: 7, bold: true, literal: "" },
-      { path: "", sizePt: 6, bold: false, literal: "" },
-      { path: "", sizePt: 6, bold: false, literal: "" },
-      { path: "", sizePt: 6, bold: false, literal: "" },
+      { path: "", sizePt: 7, bold: true, literal: "", wrap: false },
+      { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
+      { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
+      { path: "", sizePt: 6, bold: false, literal: "", wrap: false },
     ];
   }
 
@@ -280,6 +280,7 @@
         text: (ln && ln.text) || "",
         sizePt: ln.sizePt,
         bold: !!ln.bold,
+        wrap: !!ln.wrap,
       }));
     }
     const raw = item.raw || {};
@@ -289,7 +290,7 @@
       else if (m.path) {
         text = resolvePath(raw, m.path);
       }
-      return { text: text || "", sizePt: m.sizePt, bold: !!m.bold };
+      return { text: text || "", sizePt: m.sizePt, bold: !!m.bold, wrap: !!m.wrap };
     });
   }
 
@@ -337,6 +338,7 @@
           sizePt: Number(m.sizePt) || 6,
           bold: !!m.bold,
           literal: m.literal || "",
+          wrap: !!m.wrap,
         }));
       }
       const items = Array.isArray(parsed.items) ? parsed.items : [];
@@ -396,12 +398,19 @@
           if (!line.text) continue;
           const span = document.createElement("div");
           span.className = "line";
-          span.textContent = line.text;
+          // Wrap mode: let the text break across up to 2 lines (CSS clamps
+          // with ellipsis beyond that). fitText then sizes the font to fit
+          // 2 × maxW_mm so wrapping has room; nowrap keeps the single-line
+          // shrink-to-fit behaviour.
+          if (line.wrap) {
+            span.classList.add("wrap");
+          }
           const fit = UI.LabelRender.fitText(
             line.text,
             line.sizePt,
             line.bold,
-            maxW_mm
+            maxW_mm,
+            line.wrap ? 2 : 1
           );
           span.style.fontSize = fit.sizePt + "pt";
           span.style.fontWeight = line.bold ? "700" : "400";
@@ -423,8 +432,14 @@
         return (ctx.measureText(text).width / PX_PER_MM); // → mm
       },
       _cache: new Map(),
-      fitText(text, sizePt, bold, maxW_mm) {
-        const cacheKey = text + "|" + sizePt + "|" + bold + "|" + maxW_mm.toFixed(2);
+      // Shrink the font until `text` fits within maxLines lines of maxW_mm each
+      // (budget = maxW_mm × maxLines). At the floor, nowrap mode (maxLines=1)
+      // truncates char-by-char with an ellipsis; wrap mode leaves the text
+      // intact and lets the CSS line-clamp ellipsize the visible overflow.
+      fitText(text, sizePt, bold, maxW_mm, maxLines) {
+        const lines = maxLines || 1;
+        const budget = maxW_mm * lines;
+        const cacheKey = text + "|" + sizePt + "|" + bold + "|" + budget.toFixed(2);
         if (UI.LabelRender._cache.has(cacheKey)) {
           return UI.LabelRender._cache.get(cacheKey);
         }
@@ -433,14 +448,20 @@
         while (size > minSize) {
           const fontPx = size * (96 / 72); // pt → px
           const w = UI.LabelRender._measure(text, fontPx, bold);
-          if (w <= maxW_mm) {
+          if (w <= budget) {
             const result = { text, sizePt: size };
             UI.LabelRender._cache.set(cacheKey, result);
             return result;
           }
           size -= 0.5;
         }
-        // floor reached — truncate with ellipsis
+        // Floor reached. In nowrap mode, truncate to fit one line. In wrap
+        // mode, return the full text at min size — the CSS clamp bounds it.
+        if (lines > 1) {
+          const result = { text, sizePt: minSize };
+          UI.LabelRender._cache.set(cacheKey, result);
+          return result;
+        }
         const fontPx = minSize * (96 / 72);
         let t = text;
         while (t.length && UI.LabelRender._measure(t + "…", fontPx, bold) > maxW_mm) {
@@ -613,6 +634,23 @@
         boldLbl.appendChild(boldCb);
         boldLbl.appendChild(document.createTextNode("B"));
 
+        // Wrap toggle: let this line break across up to 2 lines instead of
+        // shrinking/ellipsizing on one. Useful for addresses/notes.
+        const wrapLbl = document.createElement("label");
+        const wrapCb = document.createElement("input");
+        wrapCb.type = "checkbox";
+        wrapCb.checked = m.wrap;
+        wrapCb.dataset.idx = idx;
+        wrapCb.dataset.kind = "wrap";
+        wrapCb.title = "wrap to 2 lines";
+        wrapCb.addEventListener("change", (e) => {
+          state.mapping[idx].wrap = e.target.checked;
+          UI.persist();
+          UI.renderPreview();
+        });
+        wrapLbl.appendChild(wrapCb);
+        wrapLbl.appendChild(document.createTextNode("↩"));
+
         const lit = document.createElement("input");
         lit.type = "text";
         lit.placeholder = "literal or {field}";
@@ -637,6 +675,7 @@
         controls.style.alignItems = "center";
         controls.appendChild(sizeIn);
         controls.appendChild(boldLbl);
+        controls.appendChild(wrapLbl);
         row.appendChild(controls);
         row.appendChild(lit);
         host.appendChild(row);
