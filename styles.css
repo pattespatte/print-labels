@@ -375,7 +375,7 @@ button.danger.primary:hover {
   flex: 0 0 14px;
 }
 /* Path dropdown grows to fill — this is the fix for the truncated dropdown. */
-.mapper-row select {
+.mapper-row input[data-kind="path"] {
   flex: 1 1 auto;
   min-width: 0;
 }

@@ -549,22 +549,27 @@
     buildMapperRows() {
       const host = UI.el.mapperRows;
       host.innerHTML = "";
+      // One shared datalist of discovered field paths, referenced by every
+      // row's path input via list="field-list". Freely typable AND guided —
+      // an unknown path simply resolves to empty at render (resolvePath
+      // returns "" for missing), so no hard validation is needed.
+      const datalist = document.createElement("datalist");
+      datalist.id = "field-list";
+      for (const p of state.fields) {
+        const o = document.createElement("option");
+        o.value = p;
+        datalist.appendChild(o);
+      }
+      host.appendChild(datalist);
       state.mapping.forEach((m, idx) => {
         const row = document.createElement("div");
         row.className = "mapper-row";
-        const sel = document.createElement("select");
+        const sel = document.createElement("input");
+        sel.type = "text";
+        sel.setAttribute("list", "field-list");
+        sel.placeholder = "field path";
         sel.dataset.idx = idx;
         sel.dataset.kind = "path";
-        const none = document.createElement("option");
-        none.value = "";
-        none.textContent = "— none —";
-        sel.appendChild(none);
-        for (const p of state.fields) {
-          const o = document.createElement("option");
-          o.value = p;
-          o.textContent = p;
-          sel.appendChild(o);
-        }
         sel.value = m.path;
         sel.addEventListener("change", (e) => {
           state.mapping[idx].path = e.target.value;
