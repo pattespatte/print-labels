@@ -520,6 +520,7 @@
         offsetX: $("offset-x"),
         offsetY: $("offset-y"),
         formatMeta: $("format-meta"),
+        countsMeta: $("counts-meta"),
         zoomMeta: $("zoom-meta"),
         preview: $("preview"),
         printBtn: $("print-btn"),
@@ -1137,11 +1138,18 @@
         (n, i) => n + (i.selected ? 1 : 0),
         0
       );
+      // Label count = selected items expanded by quantity (what will actually
+      // print). Computed here so the counts indicator stays in sync with the
+      // preview even when skip-N trims slots (the label count itself is
+      // independent of pagination).
+      const labelCount = Layout.expandItems(state.items).length;
       if (state.items.length === 0) {
+        UI.el.countsMeta.hidden = true;
         host.innerHTML = '<p class="status-msg">Import a JSON file to begin.</p>';
         return;
       }
       if (selectedCount === 0) {
+        UI.el.countsMeta.hidden = true;
         host.innerHTML =
           '<p class="status-msg">Select at least one item to preview.</p>';
         return;
@@ -1149,6 +1157,7 @@
 
       const perPage = Layout.slotsPerPage(fmt);
       if (state.skipN >= perPage) {
+        UI.el.countsMeta.hidden = true;
         host.innerHTML =
           '<p class="status-msg">Skip-N is ≥ labels per sheet — the first sheet would be blank.</p>';
         return;
@@ -1156,6 +1165,16 @@
 
       const pages = Layout.fillSheet(fmt, state.items, state.skipN);
       UI.el.printBtn.disabled = false;
+
+      // Persistent counts indicator in the toolbar: selected items, the label
+      // count after quantity expansion, and the number of sheets (pages).
+      // "1 sheet" / "N sheets" reads better than "1 sheets".
+      const sheetWord = pages.length === 1 ? "sheet" : "sheets";
+      UI.el.countsMeta.textContent =
+        selectedCount + " selected · " +
+        labelCount + " labels · " +
+        pages.length + " " + sheetWord;
+      UI.el.countsMeta.hidden = false;
 
       // Compute screen scale to fit pane width.
       const paneWpx = host.parentElement.clientWidth - 32;
