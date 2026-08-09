@@ -7,9 +7,14 @@
       "line3": "Room temp · feed in 12 h"
     },
     {
-      "name": "Tomato passata",
-      "line2": "Frozen 2026-08-01",
-      "line3": "Use within 6 months"
+      "name": "Kimchi",
+      "line2": "Homemade · batch 02",
+      "line3": "Jarred 2026-07-15 · Fridge"
+    },
+    {
+      "name": "Kombucha SCOBY",
+      "line2": "Hotel jar · 2nd gen",
+      "line3": "Feed weekly"
     },
     {
       "name": "Smoked paprika",
@@ -17,51 +22,29 @@
       "line3": "Best by 2027-04"
     },
     {
-      "name": "Green pesto",
-      "line2": "Homemade · batch 03",
-      "line3": "Fridge 2026-07-30"
+      "name": "Dried porcini",
+      "line2": "Foraged Oct 2025",
+      "line3": "Use within 1 year"
     },
     {
-      "name": "Anna Lindberg",
-      "line2": "Skogsvägen 12",
-      "line3": "113 42 Stockholm",
-      "line4": "Sweden"
+      "name": "Chicken stock",
+      "line2": "2 L · Frozen 2026-07-20",
+      "line3": "Use by 2027-01"
     },
     {
-      "name": "Marko Petrović",
-      "line2": "Trg Republike 5",
-      "line3": "11000 Belgrade",
-      "line4": "Serbia"
+      "name": "Beef ragù",
+      "line2": "4 portions · Frozen 2026-07-28",
+      "line3": "Reheat to 74 °C / 165 °F"
     },
     {
-      "name": "Invoices",
-      "line2": "2026",
-      "line3": "Jan – Jun"
+      "name": "Tomato passata",
+      "line2": "Frozen 2026-08-01",
+      "line3": "Use within 6 months"
     },
     {
-      "name": "Tax records",
-      "line2": "2021 – 2025",
-      "line3": "Box A3"
-    },
-    {
-      "name": "Leo, Grade 3",
-      "line2": "Lunchbox",
-      "line3": "Tel: 070-123 45 67"
-    },
-    {
-      "name": "Mia, Grade 1",
-      "line2": "Water bottle",
-      "line3": "Tel: 070-123 45 67"
-    },
-    {
-      "name": "Screws M4 × 12",
-      "line2": "Stainless A2",
-      "line3": "~200 pcs"
-    },
-    {
-      "name": "LAN cables",
-      "line2": "Cat 6 · 1 – 5 m",
-      "line3": "Bin 14"
+      "name": "Wild blueberries",
+      "line2": "Frozen 2026-08-03 · ~600 g",
+      "line3": "Foraged — Cascade Trail"
     },
     {
       "name": "Batch #042",
@@ -74,14 +57,152 @@
       "line3": "Made 2026-07-28"
     },
     {
-      "name": "Hello! My name is",
-      "line2": "________________",
-      "line3": "Stockholm Meetup"
+      "name": "Batch #044",
+      "line2": "Peach & vanilla jam",
+      "line3": "Made 2026-08-04"
     },
     {
-      "name": "Seedlings",
-      "line2": "Tomato · Basil",
-      "line3": "Sown 2026-03-15"
+      "name": "IPA #07",
+      "line2": "Citra & Mosaic hops",
+      "line3": "Brewed 2026-07-01 · Bottled 2026-07-29"
+    },
+    {
+      "name": "Elderflower cordial",
+      "line2": "Batch 2026-06-12",
+      "line3": "Dilute 1:5 · Keep refrigerated"
+    },
+    {
+      "name": "Tomato — San Marzano",
+      "line2": "Sown 2026-03-15",
+      "line3": "Transplant after last frost"
+    },
+    {
+      "name": "Chilli — Ají Amarillo",
+      "line2": "Sown 2026-03-20",
+      "line3": "Full sun · 80 days to harvest"
+    },
+    {
+      "name": "Basil — Genovese",
+      "line2": "Sown 2026-04-02",
+      "line3": "Pinch tips to encourage bushing"
+    },
+    {
+      "name": "Screws M4 × 12",
+      "line2": "Stainless A2 · ~200 pcs",
+      "line3": "Bin 07"
+    },
+    {
+      "name": "Hex bolts M6 × 30",
+      "line2": "Grade 8.8 · zinc-plated · ~50 pcs",
+      "line3": "Bin 12"
+    },
+    {
+      "name": "HSS drill bits",
+      "line2": "3 – 10 mm",
+      "line3": "Drawer 3B"
+    },
+    {
+      "name": "Wood filler — Oak",
+      "line2": "Water-based · Opened 2026-05-10",
+      "line3": "Discard if dried out"
+    },
+    {
+      "name": "LAN cables",
+      "line2": "Cat 6 · 1 – 5 m",
+      "line3": "Bin 14"
+    },
+    {
+      "name": "USB-C cables",
+      "line2": "60 W · 1 m × 4, 2 m × 2",
+      "line3": "Drawer 2A"
+    },
+    {
+      "name": "Raspberry Pi 4 · 4 GB",
+      "line2": "S/N: RPi-0042",
+      "line3": "Role: home server"
+    },
+    {
+      "name": "Invoices 2026",
+      "line2": "Jan – Jun",
+      "line3": "Box A3"
+    },
+    {
+      "name": "Tax records",
+      "line2": "2021 – 2025",
+      "line3": "Box A4 · Do not discard"
+    },
+    {
+      "name": "Contracts",
+      "line2": "Freelance · 2024 – 2026",
+      "line3": "Box B1"
+    },
+    {
+      "name": "Kitchen — Box 3 / 6",
+      "line2": "Pots, pans, utensils",
+      "line3": "FRAGILE · This side up ↑"
+    },
+    {
+      "name": "Books — Box 1 / 4",
+      "line2": "Fiction A – M",
+      "line3": "Heavy · 2nd shelf"
+    },
+    {
+      "name": "Liam · Grade 2",
+      "line2": "Lunchbox",
+      "line3": "If found: 555-0147"
+    },
+    {
+      "name": "Sofia · Grade 4",
+      "line2": "Water bottle",
+      "line3": "If found: 555-0147"
+    },
+    {
+      "name": "First aid kit — Car",
+      "line2": "Restocked 2026-01",
+      "line3": "Exp. check: Jan 2027"
+    },
+    {
+      "name": "Ibuprofen 400 mg",
+      "line2": "Opened 2026-05-20",
+      "line3": "Best by 2027-05"
+    },
+    {
+      "name": "External HDD — 2 TB",
+      "line2": "Photos 2018 – 2023",
+      "line3": "Last backup: 2026-06"
+    },
+    {
+      "name": "USB stick · 32 GB",
+      "line2": "Conference slides 2026",
+      "line3": "FAT32 · exFAT compatible"
+    },
+    {
+      "name": "Hello! My name is",
+      "line2": "________________",
+      "line3": "PyData London 2026"
+    },
+    {
+      "name": "Volunteer",
+      "line2": "________________",
+      "line3": "City Marathon 2026"
+    },
+    {
+      "name": "Yuki Nakamura",
+      "line2": "3-7-12 Shimokitazawa",
+      "line3": "Setagaya-ku, Tokyo 155-0031",
+      "line4": "Japan"
+    },
+    {
+      "name": "Fatima Al-Rashidi",
+      "line2": "Apt 4B, Al-Nuzha Street",
+      "line3": "Amman 11180",
+      "line4": "Jordan"
+    },
+    {
+      "name": "Kwame Mensah",
+      "line2": "14 Cantonments Road",
+      "line3": "Accra, GA-144",
+      "line4": "Ghana"
     }
   ]
 }
