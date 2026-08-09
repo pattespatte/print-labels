@@ -1,10 +1,14 @@
 # Print Labels
 
-A small, dependency-free web app for printing plant labels onto pre-cut HERMA A4
-label sheets using a laser printer. Open `index.html`, import a JSON file of plant
-data, choose a HERMA format, and print through your browser's print dialog.
+A small, dependency-free web app for printing labels onto pre-cut **HERMA A4**
+label sheets using any browser's print dialog. Open the page, load some data,
+pick a HERMA format, and print.
 
-Built as the browser-based successor to the `scripts/print_labels.py` workflow.
+It works for anything you'd put on a small label: pantry jars and freezer
+portions, address and mailing labels, file folders and archive boxes, kids'
+belongings, workshop bins, name badges, batch numbers, seedling tags, and more.
+
+> **Try it online:** <https://pattespatte.github.io/print-labels/>
 
 ## Run locally
 
@@ -17,32 +21,64 @@ xdg-open index.html  # Linux
 
 It also deploys cleanly to GitHub Pages as a set of static files.
 
-## Importing data
+## Getting data in
 
-Use the **Data** panel to drop or pick a JSON file. The expected shape is a JSON
-**array of objects**, for example the `seeds.json` from the gardening repo:
+There are two ways to load labels:
+
+1. **Demo data** — click the *Demo data* button in the **Data** panel to load a
+   bundled sample covering several common use cases. (Works when the app is
+   served over HTTP, e.g. on GitHub Pages. Under `file://` fetch is blocked by
+   the browser, so use the drop zone instead.)
+2. **Import a JSON file** — drop or pick a `.json` file in the **Data** panel.
+
+The expected JSON shape is one of:
 
 ```json
 [
-  { "plant_name": "Tomato", "plant_name_swedish": "Tomat", "variety": "Vilma",
-    "growing": { "days_to_harvest": 65 } }
+  { "name": "Smoked paprika", "line2": "Pimentón de la Vera", "line3": "Best by 2027-04" }
 ]
 ```
 
-A single object is also accepted (treated as a one-item list).
+```json
+{
+  "format": "5027",
+  "items": [
+    { "name": "Invoices", "line2": "2026", "line3": "Jan – Jun" }
+  ]
+}
+```
+
+A single object is also accepted (treated as a one-item list). The `{format,
+items}` wrapper optionally selects the HERMA format; otherwise choose it in the
+**Sheet** panel.
 
 You can also import a previously exported **project file** (see below) to resume
 a session — import recognises the project format and restores everything.
 
+### Field naming convention
+
+Each label has up to four text lines. The simplest convention is `name` for the
+heading plus `line2`, `line3`, `line4` for the rest:
+
+```json
+{ "name": "Anna Lindberg", "line2": "Skogsvägen 12", "line3": "113 42 Stockholm", "line4": "Sweden" }
+```
+
+The app isn't tied to these names though — the **Auto mapping** button (and
+first-import auto-detect) also recognises common alternatives like `title`,
+`label`, `product`, `category`, `type`, `variety`, `date`, `note`, and nested
+paths such as `growing.days_to_harvest`. Any field the import discovers can be
+mapped manually in the **Field mapping** panel.
+
 ## Field mapping
 
-After import, map object fields to up to four label lines in the **Field mapping**
-panel. Each line has its own font size and bold toggle, and can take either a
-field path (including dotted nested paths like `growing.days_to_harvest`) or
-literal free text.
+After import, map object fields to up to four label lines in the **Field
+mapping** panel. Each line has its own font size and bold toggle, and can take
+either a field path (including dotted nested paths like
+`growing.days_to_harvest`) or literal free text.
 
-The **Plant labels preset** seeds the mapper for the `seeds.json` shape:
-Swedish name (bold), variety, days to harvest, and a free-text line.
+**Auto mapping** seeds the mapper from whatever fields it recognises — it picks a
+heading line, a subtitle/category line, a date/detail line, and a note line.
 
 ## Printing
 
@@ -86,6 +122,10 @@ Edit `formats.js` and add an entry to `window.FORMATS`, then add its id to
 `// VERIFY` have correct label sizes but **unconfirmed margins and pitch** —
 confirm against an official HERMA template or a calibration grid printout before
 relying on them.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 ## Repository
 

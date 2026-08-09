@@ -2,789 +2,86 @@
   "format": "5027",
   "items": [
     {
-      "id": "51dd681e-a753-45e4-aa8d-6dce5f1ebbff",
-      "plant_name": "Asparago argenteuil",
-      "plant_name_english": "Asparagus",
-      "plant_name_swedish": "Sparris",
-      "variety": "Asparagus (Argenteuil variety)",
-      "botanical_name": "Asparagus officinalis",
-      "family": "Asparagaceae",
-      "type": "perennial",
-      "resource_link": "https://www.rhs.org.uk/vegetables/asparagus/grow-your-own",
-      "germination": {
-        "days_min": 14,
-        "days_max": 21,
-        "temperature_c_min": 15,
-        "temperature_c_optimal": 22,
-        "light_required": true,
-        "special_treatment": "stratification"
-      },
-      "planting": {
-        "depth_cm": 3,
-        "spacing_cm": 30,
-        "row_spacing_cm": 45,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 10,
-        "direct_sow_timing": "",
-        "transplant_timing": "10 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "moderate",
-        "soil_preference": "Rich, well-drained, sandy loam with pH 6.5-7.5",
-        "height_cm": 150,
-        "spread_cm": 45,
-        "days_to_harvest": 730,
-        "harvest_window_days": 60
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/asparago-argenteuil--front.webp",
-        "image_back_path": "../images/seeds/asparago-argenteuil--back.webp",
-        "image_instructions_path": "../images/seeds/asparago-argenteuil--instructions.webp"
-      },
-      "nordic_suitability": "good",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/asparago-argenteuil--front.webp",
-        "image_back": "../images/seeds/asparago-argenteuil--back.webp",
-        "image_instructions": "../images/seeds/asparago-argenteuil--instructions.webp",
-        "extracted_at": "2026-01-04T20:53:34.569750",
-        "updated_at": "2026-01-05T00:00:00.000000",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database. Instructions image added but quality insufficient for OCR - existing data from packet description appears comprehensive."
-      },
-      "special_instructions": "A French variety from the outskirts of Paris. Early variety with tasty, tender tips. Plant seed in a seed bed to produce crowns in the first year and then transplant into their permanent position in fertile, well-drained soil. Do not cut in the first year and only lightly in the following season, and then increase cutting over the next 3 years. At the end of the cutting season allow to grow up to reinvigorate the crowns.  Cut back in winter and mulch with compost or washed seaweed. Will deliver for 20 or so years. 5g about 250 seeds.",
-      "companion_plants": [
-        "Tomatoes",
-        "Basil",
-        "Parsley"
-      ]
+      "name": "Sourdough starter",
+      "line2": "Fed 2026-08-09",
+      "line3": "Room temp · feed in 12 h"
     },
     {
-      "id": "22cf3b2f-c1a9-456d-8309-a2d5e44b0b17",
-      "plant_name": "Körsbärstomat - Primabell",
-      "variety": "Tomato (Primabell - cherry tomato)",
-      "botanical_name": "Solanum lycopersicum",
-      "family": "Solanaceae",
-      "type": "annual",
-      "resource_link": "https://www.sativa.bio/en/primabella-cherry-tomato-to30",
-      "germination": {
-        "days_min": 6,
-        "days_max": 14,
-        "temperature_c_min": 18,
-        "temperature_c_optimal": 24,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 0.5,
-        "spacing_cm": 50,
-        "row_spacing_cm": 70,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 8,
-        "direct_sow_timing": "",
-        "transplant_timing": "8 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-6.8",
-        "height_cm": 180,
-        "spread_cm": 60,
-        "days_to_harvest": 75,
-        "harvest_window_days": 60
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/korsbarstomat--primabell--front.webp",
-        "image_back_path": "../images/seeds/korsbarstomat--primabell--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/korsbarstomat--primabell--front.webp",
-        "image_back": "../images/seeds/korsbarstomat--primabell--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569856",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Greenhouse required. Stake or cage. Remove suckers from indeterminate varieties.",
-      "companion_plants": []
+      "name": "Tomato passata",
+      "line2": "Frozen 2026-08-01",
+      "line3": "Use within 6 months"
     },
     {
-      "id": "fc8f4898-e740-4364-aa29-7799726bb24f",
-      "plant_name": "Pepper - Bi̇ber tohumu (koni̇k bi̇ber)",
-      "variety": "Pepper (conical/horn pepper)",
-      "botanical_name": "Capsicum annuum",
-      "family": "Solanaceae",
-      "type": "annual",
-      "resource_link": "https://www.fidedeposu.com/urun/konik-biberiye-biber-tohumu",
-      "germination": {
-        "days_min": 10,
-        "days_max": 21,
-        "temperature_c_min": 21,
-        "temperature_c_optimal": 26,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 0.5,
-        "spacing_cm": 40,
-        "row_spacing_cm": 50,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 10,
-        "direct_sow_timing": "",
-        "transplant_timing": "10 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "moderate",
-        "soil_preference": "Well-drained, fertile soil with pH 6.0-6.8",
-        "height_cm": 60,
-        "spread_cm": 40,
-        "days_to_harvest": 155,
-        "harvest_window_days": 60
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/pepper--biber-tohumu-(konik-biber)--front.webp",
-        "image_back_path": "../images/seeds/pepper--biber-tohumu-(konik-biber)--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/pepper--biber-tohumu-(konik-biber)--front.webp",
-        "image_back": "../images/seeds/pepper--biber-tohumu-(konik-biber)--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569881",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Greenhouse essential in Stockholm. Very heat-demanding. Don't plant out until night temps are 15°C+.",
-      "companion_plants": [
-        "Basil",
-        "Onions",
-        "Lettuce",
-        "Spinach"
-      ]
+      "name": "Smoked paprika",
+      "line2": "Pimentón de la Vera",
+      "line3": "Best by 2027-04"
     },
     {
-      "id": "eb0c6007-826e-425b-96b3-b045e9c13ebd",
-      "plant_name": "Svampgurka - Lufta",
-      "variety": "Luffa (Sponge gourd - Lufta)",
-      "botanical_name": "Luffa aegyptiaca",
-      "family": "Cucurbitaceae",
-      "type": "annual",
-      "resource_link": "https://www.nelsongarden.se/tips-och-inspiration/odla-svampgurka/",
-      "germination": {
-        "days_min": 7,
-        "days_max": 14,
-        "temperature_c_min": 20,
-        "temperature_c_optimal": 28,
-        "light_required": true,
-        "special_treatment": "Soak seeds 24h before sowing; scarify for better germination"
-      },
-      "planting": {
-        "depth_cm": 2,
-        "spacing_cm": 50,
-        "row_spacing_cm": 100,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 8,
-        "direct_sow_timing": "",
-        "transplant_timing": "After last frost when soil is warm (18°C+)"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-7.0, needs lots of warmth",
-        "height_cm": 300,
-        "spread_cm": 60,
-        "days_to_harvest": 150,
-        "harvest_window_days": 30
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/svampgurka--lufta--front.webp",
-        "image_back_path": "../images/seeds/svampgurka--lufta--back.webp"
-      },
-      "nordic_suitability": "marginal",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/svampgurka--lufta--front.webp",
-        "image_back": "../images/seeds/svampgurka--lufta--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569909",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "FIXED: Corrected botanical name from Cucumis sativus (cucumber) to Luffa aegyptiaca (sponge gourd). Updated variety and all growing parameters for Luffa. Changed Nordic suitability from greenhouse-only to marginal due to long season (150 days)."
-      },
-      "special_instructions": "Marginal in Stockholm - requires long warm season (150 days for sponges). Best in warm greenhouse with heat mat. Start early (8 weeks before last frost). Young fruits can be eaten like zucchini; for sponges, let mature until skin loosens. Train vertically on strong trellis.",
-      "companion_plants": [
-        "Beans",
-        "Corn",
-        "Marigolds",
-        "Radishes",
-        "Avoid: Potatoes, Pumpkins"
-      ]
+      "name": "Green pesto",
+      "line2": "Homemade · batch 03",
+      "line3": "Fridge 2026-07-30"
     },
     {
-      "id": "b8e4a13f-5d2c-5678-9012-cdef23456789",
-      "plant_name": "Purple Basil",
-      "plant_name_english": "Basil",
-      "plant_name_swedish": "Basilika",
-      "variety": "Purple basil (Ocimum basilicum purpurascens)",
-      "botanical_name": "Ocimum basilicum",
-      "family": "Lamiaceae",
-      "type": "annual",
-      "resource_link": "https://www.rhs.org.uk/plants/ocimum-basilicum/details",
-      "germination": {
-        "days_min": 5,
-        "days_max": 14,
-        "temperature_c_min": 15,
-        "temperature_c_optimal": 21,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 0.3,
-        "spacing_cm": 20,
-        "row_spacing_cm": 30,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 6,
-        "direct_sow_timing": "After last frost when soil is warm",
-        "transplant_timing": "After last frost, when soil has warmed"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "moderate",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-7.0",
-        "height_cm": 45,
-        "spread_cm": 30,
-        "days_to_harvest": 70,
-        "harvest_window_days": 60
-      },
-      "package_info": {
-        "brand": "",
-        "seed_count": 500,
-        "year_purchased": 2018,
-        "organic": false
-      },
-      "nordic_suitability": "good",
-      "extraction_metadata": {
-        "extracted_at": "2026-01-20T18:00:00.000000",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Manual entry. Purple Basil (Ocimum basilicum), 500 seeds from 2018."
-      },
-      "special_instructions": "Good for Stockholm. Sow after last frost - basil is very cold sensitive. Pinch flowers to encourage leafy growth. Harvest regularly to prevent bolting. Old seed (2018) - test germination before full sowing. Purple variety has ornamental value with deep reddish-purple leaves.",
-      "companion_plants": [
-        "Tomatoes",
-        "Peppers",
-        "Eggplant",
-        "Beans",
-        "Lettuce"
-      ]
+      "name": "Anna Lindberg",
+      "line2": "Skogsvägen 12",
+      "line3": "113 42 Stockholm",
+      "line4": "Sweden"
     },
     {
-      "id": "2b28c318-e390-4902-888d-f72caa29b13b",
-      "plant_name": "Watermelon - Little Darling F1",
-      "plant_name_english": "Watermelon",
-      "plant_name_swedish": "Vattenmelon",
-      "variety": "Watermelon (Little Darling F1 - icebox type)",
-      "botanical_name": "Citrullus lanatus",
-      "family": "Cucurbitaceae",
-      "type": "annual",
-      "resource_link": "https://www.thompson-morgan.com/p/watermelon-little-darling-f1-seeds/wkc9371TM",
-      "germination": {
-        "days_min": 7,
-        "days_max": 14,
-        "temperature_c_min": 21,
-        "temperature_c_optimal": 28,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 2.5,
-        "spacing_cm": 100,
-        "row_spacing_cm": 150,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 4,
-        "direct_sow_timing": "",
-        "transplant_timing": "4 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, sandy loam with pH 6.0-6.8",
-        "height_cm": 20,
-        "spread_cm": 300,
-        "days_to_harvest": 80,
-        "harvest_window_days": 21
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/water-melon--little-darling-f1--front.webp",
-        "image_back_path": "../images/seeds/water-melon--little-darling-f1--back.webp"
-      },
-      "nordic_suitability": "marginal",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/water-melon--little-darling-f1--front.webp",
-        "image_back": "../images/seeds/water-melon--little-darling-f1--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569961",
-        "updated_at": "2026-01-06T00:00:00.000000",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "FIXED: Corrected botanical name from Linum (flax) to Citrullus lanatus. Changed Nordic suitability from excellent to marginal. Updated all growing parameters."
-      },
-      "special_instructions": "Marginal in Stockholm. Small, early variety (80 days). Needs hot spot, black plastic mulch, and possibly cloche. Start indoors, transplant after last frost when soil is warm.",
-      "companion_plants": [
-        "Corn",
-        "Beans",
-        "Marigolds",
-        "Nasturtium"
-      ]
+      "name": "Marko Petrović",
+      "line2": "Trg Republike 5",
+      "line3": "11000 Belgrade",
+      "line4": "Serbia"
     },
     {
-      "id": "c690c3de-5f27-459a-aee4-8d6efbcd01e4",
-      "plant_name": "Aubergines - Solanum melongena L.",
-      "variety": "Eggplant (standard variety)",
-      "botanical_name": "Solanum melongena",
-      "family": "Solanaceae",
-      "type": "annual",
-      "resource_link": "https://www.gardenia.net/plant/solanum-melongena",
-      "germination": {
-        "days_min": 10,
-        "days_max": 14,
-        "temperature_c_min": 20,
-        "temperature_c_optimal": 25,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 0.5,
-        "spacing_cm": 45,
-        "row_spacing_cm": 60,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 10,
-        "direct_sow_timing": "",
-        "transplant_timing": "10 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 5.5-7.0",
-        "height_cm": 60,
-        "spread_cm": 45,
-        "days_to_harvest": 150,
-        "harvest_window_days": 60
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/aubergines--solanum-melongena-l.--front.webp",
-        "image_back_path": "../images/seeds/aubergines--solanum-melongena-l.--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/aubergines--solanum-melongena-l.--front.webp",
-        "image_back": "../images/seeds/aubergines--solanum-melongena-l.--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569771",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Requires greenhouse in Stockholm. Start early indoors. Keep warm (minimum 20°C). Stake plants.",
-      "companion_plants": []
+      "name": "Invoices",
+      "line2": "2026",
+      "line3": "Jan – Jun"
     },
     {
-      "id": "cc561f54-bfb4-417f-a068-02d758049c8f",
-      "plant_name": "Cucumber - Akito",
-      "variety": "Cucumber (Akito F1 - greenhouse)",
-      "botanical_name": "Cucumis sativus",
-      "family": "Cucurbitaceae",
-      "type": "annual",
-      "resource_link": "https://tamarorganics.co.uk/product/cucumber-akito-f1",
-      "germination": {
-        "days_min": 5,
-        "days_max": 10,
-        "temperature_c_min": 18,
-        "temperature_c_optimal": 24,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 2,
-        "spacing_cm": 40,
-        "row_spacing_cm": 60,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 4,
-        "direct_sow_timing": "",
-        "transplant_timing": "4 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-7.0",
-        "height_cm": 200,
-        "spread_cm": 60,
-        "days_to_harvest": 55,
-        "harvest_window_days": 45
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/cucumber--akito--front.webp",
-        "image_back_path": "../images/seeds/cucumber--akito--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/cucumber--akito--front.webp",
-        "image_back": "../images/seeds/cucumber--akito--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569779",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Greenhouse recommended for Stockholm. Provide trellis support. Regular harvesting promotes production.",
-      "companion_plants": [
-        "Beans",
-        "Corn",
-        "Peas",
-        "Radishes",
-        "Dill"
-      ]
+      "name": "Tax records",
+      "line2": "2021 – 2025",
+      "line3": "Box A3"
     },
     {
-      "id": "3bd71d80-184d-4286-9b17-46071b30565a",
-      "plant_name": "Cucumber - Chinese Slangen",
-      "variety": "Cucumber (Chinese Snake - long variety)",
-      "botanical_name": "Cucumis sativus",
-      "family": "Cucurbitaceae",
-      "type": "annual",
-      "resource_link": "https://www.magicgardenseeds.com/Snake-Cucumber-Chinese-Slangen-Cucumis-sativus-seeds",
-      "germination": {
-        "days_min": 5,
-        "days_max": 10,
-        "temperature_c_min": 18,
-        "temperature_c_optimal": 24,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 2,
-        "spacing_cm": 40,
-        "row_spacing_cm": 60,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 4,
-        "direct_sow_timing": "",
-        "transplant_timing": "4 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-7.0",
-        "height_cm": 200,
-        "spread_cm": 60,
-        "days_to_harvest": 55,
-        "harvest_window_days": 45
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/cucumber--chinese-slangen--front.webp",
-        "image_back_path": "../images/seeds/cucumber--chinese-slangen--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/cucumber--chinese-slangen--front.webp",
-        "image_back": "../images/seeds/cucumber--chinese-slangen--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569786",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Greenhouse recommended for Stockholm. Provide trellis support. Regular harvesting promotes production.",
-      "companion_plants": [
-        "Beans",
-        "Corn",
-        "Peas",
-        "Radishes",
-        "Dill"
-      ]
+      "name": "Leo, Grade 3",
+      "line2": "Lunchbox",
+      "line3": "Tel: 070-123 45 67"
     },
     {
-      "id": "272a1c93-0584-499c-8908-642dbe90c8b0",
-      "plant_name": "Cucumber - Dill Combination",
-      "variety": "Cucumber (Dill pollinator combo)",
-      "botanical_name": "Cucumis sativus",
-      "family": "Cucurbitaceae",
-      "type": "annual",
-      "resource_link": "https://www.magicgardenseeds.com/Snake-Cucumber-Chinese-Slangen-Cucumis-sativus-seeds",
-      "germination": {
-        "days_min": 5,
-        "days_max": 10,
-        "temperature_c_min": 18,
-        "temperature_c_optimal": 24,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 2,
-        "spacing_cm": 40,
-        "row_spacing_cm": 60,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 4,
-        "direct_sow_timing": "",
-        "transplant_timing": "4 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-7.0",
-        "height_cm": 200,
-        "spread_cm": 60,
-        "days_to_harvest": 55,
-        "harvest_window_days": 45
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/cucumber--dill-combination--front.webp",
-        "image_back_path": "../images/seeds/cucumber--dill-combination--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/cucumber--dill-combination--front.webp",
-        "image_back": "../images/seeds/cucumber--dill-combination--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569792",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Greenhouse recommended for Stockholm. Provide trellis support. Regular harvesting promotes production.",
-      "companion_plants": [
-        "Beans",
-        "Corn",
-        "Peas",
-        "Radishes",
-        "Dill"
-      ]
+      "name": "Mia, Grade 1",
+      "line2": "Water bottle",
+      "line3": "Tel: 070-123 45 67"
     },
     {
-      "id": "fd3c582e-a3e2-4de0-b2c8-29721f639bfa",
-      "plant_name": "Cucumber - Formule H",
-      "variety": "Cucumber (Formule H - all-female)",
-      "botanical_name": "Cucumis sativus",
-      "family": "Cucurbitaceae",
-      "type": "annual",
-      "resource_link": "https://odlariket.com/en/products/gurka-formule-h-f1",
-      "germination": {
-        "days_min": 5,
-        "days_max": 10,
-        "temperature_c_min": 18,
-        "temperature_c_optimal": 24,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 2,
-        "spacing_cm": 40,
-        "row_spacing_cm": 60,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 4,
-        "direct_sow_timing": "",
-        "transplant_timing": "4 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-7.0",
-        "height_cm": 200,
-        "spread_cm": 60,
-        "days_to_harvest": 55,
-        "harvest_window_days": 45
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/cucumber--formule-h--front.webp",
-        "image_back_path": "../images/seeds/cucumber--formule-h--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/cucumber--formule-h--front.webp",
-        "image_back": "../images/seeds/cucumber--formule-h--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569800",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Greenhouse recommended for Stockholm. Provide trellis support. Regular harvesting promotes production.",
-      "companion_plants": [
-        "Beans",
-        "Corn",
-        "Peas",
-        "Radishes",
-        "Dill"
-      ]
+      "name": "Screws M4 × 12",
+      "line2": "Stainless A2",
+      "line3": "~200 pcs"
     },
     {
-      "id": "4050295a-762d-496b-ac47-abace55c0410",
-      "plant_name": "Cucumber - Superstar H",
-      "variety": "Cucumber (Superstar H - Beit Alpha type)",
-      "botanical_name": "Cucumis sativus",
-      "family": "Cucurbitaceae",
-      "type": "annual",
-      "resource_link": "https://www.magicgardenseeds.com/Snake-Cucumber-Chinese-Slangen-Cucumis-sativus-seeds",
-      "germination": {
-        "days_min": 5,
-        "days_max": 10,
-        "temperature_c_min": 18,
-        "temperature_c_optimal": 24,
-        "light_required": true,
-        "special_treatment": "none"
-      },
-      "planting": {
-        "depth_cm": 2,
-        "spacing_cm": 40,
-        "row_spacing_cm": 60,
-        "sowing_method": "indoor",
-        "indoor_start_weeks_before_last_frost": 4,
-        "direct_sow_timing": "",
-        "transplant_timing": "4 weeks before last frost"
-      },
-      "growing": {
-        "sun_requirements": "full",
-        "water_needs": "high",
-        "soil_preference": "Rich, well-drained soil with pH 6.0-7.0",
-        "height_cm": 200,
-        "spread_cm": 60,
-        "days_to_harvest": 55,
-        "harvest_window_days": 45
-      },
-      "package_info": {
-        "brand": "",
-        "image_front_path": "../images/seeds/cucumber--superstar-h--front.webp",
-        "image_back_path": "../images/seeds/cucumber--superstar-h--back.webp"
-      },
-      "nordic_suitability": "greenhouse-only",
-      "extraction_metadata": {
-        "image_front": "../images/seeds/cucumber--superstar-h--front.webp",
-        "image_back": "../images/seeds/cucumber--superstar-h--back.webp",
-        "extracted_at": "2026-01-04T20:53:34.569807",
-        "confidence": "high",
-        "fields_inferred": [
-          "botanical_name",
-          "family",
-          "type",
-          "germination",
-          "planting",
-          "growing",
-          "nordic_suitability"
-        ],
-        "fields_missing": [],
-        "notes": "Enhanced with botanical database"
-      },
-      "special_instructions": "Greenhouse recommended for Stockholm. Provide trellis support. Regular harvesting promotes production.",
-      "companion_plants": [
-        "Beans",
-        "Corn",
-        "Peas",
-        "Radishes",
-        "Dill"
-      ]
+      "name": "LAN cables",
+      "line2": "Cat 6 · 1 – 5 m",
+      "line3": "Bin 14"
+    },
+    {
+      "name": "Batch #042",
+      "line2": "Strawberry jam",
+      "line3": "Made 2026-07-21"
+    },
+    {
+      "name": "Batch #043",
+      "line2": "Apricot chutney",
+      "line3": "Made 2026-07-28"
+    },
+    {
+      "name": "Hello! My name is",
+      "line2": "________________",
+      "line3": "Stockholm Meetup"
+    },
+    {
+      "name": "Seedlings",
+      "line2": "Tomato · Basil",
+      "line3": "Sown 2026-03-15"
     }
   ]
 }

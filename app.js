@@ -176,10 +176,6 @@
       if (m.literal) text = m.literal;
       else if (m.path) {
         text = resolvePath(raw, m.path);
-        // Convenience suffix for the plant preset: " days" on days_to_harvest.
-        if (m.path && /days_to_harvest$/.test(m.path) && text) {
-          text = text + " days";
-        }
       }
       return { text: text || "", sizePt: m.sizePt, bold: !!m.bold };
     });
@@ -375,6 +371,7 @@
       UI.el = {
         fileInput: $("file-input"),
         dropZone: $("drop-zone"),
+        demoBtn: $("demo-btn"),
         exportBtn: $("export-btn"),
         ioStatus: $("io-status"),
         itemsList: $("items-list"),
@@ -554,6 +551,7 @@
       });
 
       UI.el.exportBtn.addEventListener("click", () => Project.download());
+      UI.el.demoBtn.addEventListener("click", UI.loadDemo);
 
       UI.el.selectAll.addEventListener("click", () => {
         state.items.forEach((i) => (i.selected = true));
@@ -566,7 +564,7 @@
         UI.renderPreview();
       });
 
-      UI.el.presetPlant.addEventListener("click", UI.applyPlantPreset);
+      UI.el.presetPlant.addEventListener("click", UI.applyAutoMapping);
       UI.el.clearMapping.addEventListener("click", () => {
         state.mapping = emptyMapping();
         UI.buildMapperRows();
@@ -688,6 +686,96 @@
       UI.renderPreview();
     },
 
+    // Load the bundled demo dataset (sample.json). Works when served over HTTP
+    // (e.g. GitHub Pages). Under file:// fetch is blocked by CORS — use the
+    // drop zone / file picker instead.
+    loadDemo() {
+      UI.el.ioStatus.textContent = "Loading demo data…";
+      UI.el.ioStatus.style.color = "var(--ink)";
+      fetch("sample.json")
+        .then((res) => {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then((data) => UI.ingestData(data, "demo data"))
+        .catch((err) => {
+          UI.el.ioStatus.textContent =
+            "Could not load demo data (use the drop zone instead): " + err.message;
+          UI.el.ioStatus.style.color = "var(--danger)";
+        });
+    },
+
+    // Shared ingestion core used by both file import and the demo button.
+    // `parsed` is already JSON-parsed; `sourceLabel` is a human description
+    // (a filename, or "demo data") used in the status line.
+    ingestData(parsed, sourceLabel) {
+      // Recognize a saved project file (round-trip with Export).
+      if (parsed && parsed._type === PROJECT_TYPE) {
+        Project.load(parsed);
+        UI.el.ioStatus.textContent =
+          "Loaded project: " + state.items.length + " items.";
+        UI.el.ioStatus.style.color = "var(--accent)";
+      } else {
+        let arr = parsed;
+        let formatFromWrapper = null;
+        // A data file may wrap items and declare the HERMA format to use:
+        //   { "format": "5027", "items": [ {...}, {...} ] }
+        if (
+          parsed &&
+          !Array.isArray(parsed) &&
+          typeof parsed === "object" &&
+          Array.isArray(parsed.items)
+        ) {
+          arr = parsed.items;
+          if (parsed.format && window.FORMATS[parsed.format]) {
+            formatFromWrapper = parsed.format;
+          }
+        } else if (Array.isArray(parsed)) {
+          // plain array — use as-is
+        } else if (parsed && typeof parsed === "object") {
+          arr = [parsed]; // single object → one-item list
+        } else {
+          UI.el.ioStatus.textContent =
+            "Expected a JSON array of objects, a {format, items} object, or a print-labels project file.";
+          UI.el.ioStatus.style.color = "var(--danger)";
+          return;
+        }
+        state.items = arr.map((entry) => {
+          // An entry may already carry frozen `lines` (manual-style) or be
+          // a raw data object resolved through the field mapper.
+          const item = { qty: 1, selected: true };
+          if (entry && typeof entry === "object" && Array.isArray(entry.lines)) {
+            item.lines = entry.lines;
+          } else {
+            item.raw = entry;
+          }
+          return item;
+        });
+        if (formatFromWrapper) {
+          state.formatId = formatFromWrapper;
+          UI.el.formatSelect.value = formatFromWrapper;
+        }
+        const fmtNote = formatFromWrapper ? " (format: " + formatFromWrapper + ")" : "";
+        UI.el.ioStatus.textContent =
+          "Loaded " + state.items.length + " items from " + sourceLabel + "." + fmtNote;
+        UI.el.ioStatus.style.color = "var(--accent)";
+      }
+      state.fields = Fields.discoverPaths(state.items.map((i) => i.raw));
+      // First-run help: if no mapping is configured yet (all paths empty),
+      // auto-apply the generic mapping so imported data is visible immediately.
+      // The user can still change or clear it afterwards.
+      const mappingIsEmpty = state.mapping.every(
+        (m) => !m.path && !m.literal
+      );
+      if (mappingIsEmpty && state.fields.length > 0) {
+        UI.applyAutoMapping();
+      } else {
+        UI.buildMapperRows();
+      }
+      UI.renderItems();
+      UI.renderPreview();
+    },
+
     importFile(file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -699,71 +787,7 @@
           UI.el.ioStatus.style.color = "var(--danger)";
           return;
         }
-        // Recognize a saved project file (round-trip with Export).
-        if (parsed && parsed._type === PROJECT_TYPE) {
-          Project.load(parsed);
-          UI.el.ioStatus.textContent =
-            "Loaded project: " + state.items.length + " items.";
-          UI.el.ioStatus.style.color = "var(--accent)";
-        } else {
-          let arr = parsed;
-          let formatFromWrapper = null;
-          // A data file may wrap items and declare the HERMA format to use:
-          //   { "format": "5027", "items": [ {...}, {...} ] }
-          if (
-            parsed &&
-            !Array.isArray(parsed) &&
-            typeof parsed === "object" &&
-            Array.isArray(parsed.items)
-          ) {
-            arr = parsed.items;
-            if (parsed.format && window.FORMATS[parsed.format]) {
-              formatFromWrapper = parsed.format;
-            }
-          } else if (Array.isArray(parsed)) {
-            // plain array — use as-is
-          } else if (parsed && typeof parsed === "object") {
-            arr = [parsed]; // single object → one-item list
-          } else {
-            UI.el.ioStatus.textContent =
-              "Expected a JSON array of objects, a {format, items} object, or a print-labels project file.";
-            UI.el.ioStatus.style.color = "var(--danger)";
-            return;
-          }
-          state.items = arr.map((entry) => {
-            // An entry may already carry frozen `lines` (manual-style) or be
-            // a raw data object resolved through the field mapper.
-            const item = { qty: 1, selected: true };
-            if (entry && typeof entry === "object" && Array.isArray(entry.lines)) {
-              item.lines = entry.lines;
-            } else {
-              item.raw = entry;
-            }
-            return item;
-          });
-          if (formatFromWrapper) {
-            state.formatId = formatFromWrapper;
-            UI.el.formatSelect.value = formatFromWrapper;
-          }
-          const fmtNote = formatFromWrapper ? " (format: " + formatFromWrapper + ")" : "";
-          UI.el.ioStatus.textContent =
-            "Imported " + state.items.length + " items from " + file.name + "." + fmtNote;
-          UI.el.ioStatus.style.color = "var(--accent)";
-        }
-        state.fields = Fields.discoverPaths(state.items.map((i) => i.raw));
-        // First-run help: if no mapping is configured yet (all paths empty),
-        // auto-apply the plant preset so imported data is visible immediately.
-        // The user can still change or clear it afterwards.
-        const mappingIsEmpty = state.mapping.every(
-          (m) => !m.path && !m.literal
-        );
-        if (mappingIsEmpty && state.fields.length > 0) {
-          UI.applyPlantPreset();
-        } else {
-          UI.buildMapperRows();
-        }
-        UI.renderItems();
-        UI.renderPreview();
+        UI.ingestData(parsed, file.name);
       };
       reader.onerror = () => {
         UI.el.ioStatus.textContent = "Could not read file.";
@@ -843,22 +867,34 @@
       });
     },
 
-    applyPlantPreset() {
+    // Generic field mapping: detect common field names and lay them out across
+    // the four label lines. Tries general-purpose keys first (name/title/label/
+    // product, category/type/variety, date/note) and falls back to plant-specific
+    // keys (plant_name*, growing.days_to_harvest) so older data files still map.
+    applyAutoMapping() {
       const has = (p) => state.fields.indexOf(p) !== -1;
+      const pick = (candidates) => candidates.find(has) || "";
       const m = emptyMapping();
-      if (has("plant_name_swedish")) m[0].path = "plant_name_swedish";
-      else if (has("plant_name")) m[0].path = "plant_name";
+      // Line 1 — the heading. Largest, bold.
+      m[0].path = pick([
+        "name", "title", "label", "product", "item",
+        "plant_name_swedish", "plant_name", "plant_name_english",
+      ]);
       m[0].sizePt = 7;
       m[0].bold = true;
-      if (has("variety")) {
-        m[1].path = "variety";
-        m[1].sizePt = 6;
-      }
-      if (has("growing.days_to_harvest")) {
-        m[2].path = "growing.days_to_harvest";
-        m[2].sizePt = 6;
-      }
-      m[3].literal = "";
+      // Line 2 — subtitle / category / variety.
+      m[1].path = pick([
+        "line2", "category", "type", "variety", "brand", "address",
+      ]);
+      m[1].sizePt = 6;
+      // Line 3 — a date or third detail.
+      m[2].path = pick([
+        "line3", "date", "made", "best_before", "contents",
+        "growing.days_to_harvest",
+      ]);
+      m[2].sizePt = 6;
+      // Line 4 — free note or remaining generic line.
+      m[3].path = pick(["line4", "note", "notes", "description"]);
       m[3].sizePt = 6;
       state.mapping = m;
       UI.buildMapperRows();

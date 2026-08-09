@@ -9,7 +9,7 @@
   <body>
     <header class="app-header">
       <h1>Print Labels</h1>
-      <span class="subtitle">HERMA A4 label sheets · plant labels</span>
+      <span class="subtitle">HERMA A4 label sheets · print labels from your browser</span>
       <button id="print-btn-header" class="primary" type="button">Print</button>
     </header>
 
@@ -22,7 +22,8 @@
             <label for="file-input">Drop JSON here<br />or click to choose</label>
             <input type="file" id="file-input" accept="application/json,.json" />
           </div>
-          <div class="row" style="margin-top: 10px">
+          <div class="row" style="margin-top: 10px; gap: 8px">
+            <button id="demo-btn" type="button">Demo data</button>
             <button id="export-btn" class="primary" disabled>Export project</button>
           </div>
           <p id="io-status" class="hint"></p>
@@ -72,7 +73,7 @@
             <!-- 4 mapper rows injected by app.js -->
           </div>
           <div class="row" style="margin-top: 8px">
-            <button id="preset-plant" type="button">Plant labels preset</button>
+            <button id="preset-plant" type="button">Auto mapping</button>
             <button id="clear-mapping" type="button">Clear</button>
           </div>
         </section>
