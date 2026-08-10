@@ -28,7 +28,7 @@
             <button id="csv-btn" type="button">Paste CSV/TSV</button>
             <button id="export-btn" class="primary" disabled>Export project</button>
           </div>
-          <p id="io-status" class="hint"></p>
+          <p id="io-status" class="hint" aria-live="polite"></p>
         </section>
 
         <!-- Items -->
@@ -55,16 +55,20 @@
           </div>
           <div id="item-editor" hidden>
             <div class="editor-row">
-              <input type="text" data-line="0" placeholder="Line 1 (bold, largest)" />
+              <label for="editor-line-0" class="visually-hidden">Line 1</label>
+              <input type="text" id="editor-line-0" data-line="0" placeholder="Line 1 (bold, largest)" />
             </div>
             <div class="editor-row">
-              <input type="text" data-line="1" placeholder="Line 2" />
+              <label for="editor-line-1" class="visually-hidden">Line 2</label>
+              <input type="text" id="editor-line-1" data-line="1" placeholder="Line 2" />
             </div>
             <div class="editor-row">
-              <input type="text" data-line="2" placeholder="Line 3" />
+              <label for="editor-line-2" class="visually-hidden">Line 3</label>
+              <input type="text" id="editor-line-2" data-line="2" placeholder="Line 3" />
             </div>
             <div class="editor-row">
-              <input type="text" data-line="3" placeholder="Line 4" />
+              <label for="editor-line-3" class="visually-hidden">Line 4</label>
+              <input type="text" id="editor-line-3" data-line="3" placeholder="Line 4" />
             </div>
             <div class="row" style="margin: 6px 0">
               <label class="field" style="flex: 0 0 90px; margin: 0">
@@ -169,7 +173,7 @@
         <h2 id="preview-heading" class="visually-hidden">Preview</h2>
         <div class="preview-toolbar">
           <span id="format-meta" class="meta"></span>
-          <span id="counts-meta" class="meta" hidden></span>
+          <span id="counts-meta" class="meta" hidden aria-live="polite" aria-atomic="true"></span>
           <span class="spacer"></span>
           <label class="field inline-toggle" for="scale-toggle">
             <input type="checkbox" id="scale-toggle" />
@@ -214,7 +218,7 @@
           <span>Data</span>
           <textarea id="csv-area" rows="8" placeholder="Name,Best before,Notes&#10;Sourdough,2027-04,Fridge"></textarea>
         </label>
-        <p id="csv-status" class="hint"></p>
+        <p id="csv-status" class="hint" aria-live="polite"></p>
         <div class="row" style="justify-content: flex-end; gap: 8px">
           <button id="csv-cancel" type="button">Cancel</button>
           <button id="csv-import" type="button" class="primary">Import</button>

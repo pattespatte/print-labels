@@ -641,6 +641,7 @@
         sel.placeholder = "field path";
         sel.dataset.idx = idx;
         sel.dataset.kind = "path";
+        sel.setAttribute("aria-label", "Line " + (idx + 1) + " field path");
         sel.value = m.path;
         sel.addEventListener("change", (e) => {
           state.mapping[idx].path = e.target.value;
@@ -656,6 +657,7 @@
         sizeIn.dataset.idx = idx;
         sizeIn.dataset.kind = "size";
         sizeIn.title = "font size (pt)";
+        sizeIn.setAttribute("aria-label", "Line " + (idx + 1) + " font size (pt)");
         sizeIn.addEventListener("change", (e) => {
           state.mapping[idx].sizePt = Number(e.target.value) || 6;
           UI.persist();
@@ -668,6 +670,7 @@
         boldCb.checked = m.bold;
         boldCb.dataset.idx = idx;
         boldCb.dataset.kind = "bold";
+        boldCb.setAttribute("aria-label", "Line " + (idx + 1) + " bold");
         boldCb.addEventListener("change", (e) => {
           state.mapping[idx].bold = e.target.checked;
           UI.persist();
@@ -685,6 +688,7 @@
         wrapCb.dataset.idx = idx;
         wrapCb.dataset.kind = "wrap";
         wrapCb.title = "wrap to 2 lines";
+        wrapCb.setAttribute("aria-label", "Line " + (idx + 1) + " wrap to 2 lines");
         wrapCb.addEventListener("change", (e) => {
           state.mapping[idx].wrap = e.target.checked;
           UI.persist();
@@ -699,6 +703,7 @@
         lit.value = m.literal;
         lit.dataset.idx = idx;
         lit.dataset.kind = "literal";
+        lit.setAttribute("aria-label", "Line " + (idx + 1) + " literal text or {field}");
         lit.addEventListener("change", (e) => {
           state.mapping[idx].literal = e.target.value;
           UI.persist();
@@ -889,6 +894,92 @@
     // --- Reusable confirm modal ---
     // Usage: UI.confirmModal({ title, body, confirmLabel, onConfirm })
     _modalOnConfirm: null,
+    // Focus-trap bookkeeping shared by both modals. _lastFocus records the
+    // element that had focus when the modal opened so it can be restored on
+    // close; _trapHandler is the bound keydown listener (kept so it can be
+    // removed again). _activeDialog tracks which dialog the trap currently
+    // guards so the Escape handler (which also handles the csv textarea) and
+    // the trap don't fight.
+    _lastFocus: null,
+    _trapHandler: null,
+    _activeDialog: null,
+
+    // Trap Tab/Shift-Tab inside a dialog and activate the cancel button on
+    // Escape. `dialog` is the inner dialog element (#modal or #csv-modal).
+    // The dialog already has role="dialog" aria-modal="true" in the markup.
+    trapFocus(dialog) {
+      // Query focusable candidates once per keydown: the DOM is static during
+      // a single dialog session, but querying lazily keeps this robust if
+      // controls are ever dynamically shown/hidden inside the dialog.
+      const focusables = () =>
+        Array.from(
+          dialog.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => !el.disabled && el.offsetParent !== null);
+
+      UI._trapHandler = (e) => {
+        if (e.key === "Escape") {
+          // Cancel/close the active dialog. stopPropagation prevents the
+          // document-level bubble-phase Escape handler (UI.bind) from also
+          // firing, and preventDefault stops the textarea in the CSV dialog
+          // from receiving the key.
+          e.preventDefault();
+          e.stopPropagation();
+          if (UI._activeDialog === UI.el.csvModal) UI.closeCsvModal();
+          else UI.closeModal();
+          return;
+        }
+        if (e.key !== "Tab") return;
+        const f = focusables();
+        if (f.length === 0) return;
+        const first = f[0];
+        const last = f[f.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey) {
+          // Shift-Tab on the first element wraps to the last.
+          if (active === first || !dialog.contains(active)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          // Tab on the last element wraps to the first.
+          if (active === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+      document.addEventListener("keydown", UI._trapHandler, true);
+    },
+
+    // Open-bookkeeping shared by both dialogs: record the trigger, install the
+    // trap, focus the first focusable (caller picks which).
+    _openDialog(dialog, focusTarget) {
+      UI._lastFocus = document.activeElement;
+      UI._activeDialog = dialog;
+      UI.trapFocus(dialog);
+      // Defer the focus until after the hidden=false paints, so the element
+      // is focusable in all browsers.
+      (focusTarget || dialog).focus();
+    },
+
+    // Close-bookkeeping shared by both dialogs: remove the trap, restore focus.
+    _closeDialog() {
+      if (UI._trapHandler) {
+        document.removeEventListener("keydown", UI._trapHandler, true);
+        UI._trapHandler = null;
+      }
+      UI._activeDialog = null;
+      const trigger = UI._lastFocus;
+      UI._lastFocus = null;
+      // Restore focus on the next tick so the hiding (hidden=true) has settled;
+      // restoring immediately can land focus back on the dialog in some UAs.
+      if (trigger && typeof trigger.focus === "function") {
+        trigger.focus();
+      }
+    },
+
     confirmModal(opts) {
       UI.el.modalTitle.textContent = opts.title || "Are you sure?";
       UI.el.modalBody.textContent = opts.body || "";
@@ -901,12 +992,13 @@
         if (fn) fn();
       };
       UI.el.modalBackdrop.hidden = false;
-      UI.el.modalConfirm.focus();
+      UI._openDialog(UI.el.modal, UI.el.modalConfirm);
     },
 
     closeModal() {
       UI.el.modalBackdrop.hidden = true;
       UI._modalOnConfirm = null;
+      UI._closeDialog();
     },
 
     // --- CSV/TSV paste import modal (separate from the confirm modal) ---
@@ -916,11 +1008,12 @@
       UI.el.csvStatus.textContent = "";
       UI.el.csvStatus.style.color = "";
       UI.el.csvModalBackdrop.hidden = false;
-      UI.el.csvArea.focus();
+      UI._openDialog(UI.el.csvModal, UI.el.csvArea);
     },
 
     closeCsvModal() {
       UI.el.csvModalBackdrop.hidden = true;
+      UI._closeDialog();
     },
 
     importCsv() {
@@ -1246,6 +1339,10 @@
         rm.type = "button";
         rm.textContent = "✕";
         rm.title = "remove";
+        // SR-only label: the visible glyph (✕) is clear for sighted users but
+        // uninformative to AT. Include the item label so the announcement is
+        // unambiguous in a long list.
+        rm.setAttribute("aria-label", "Remove item " + entry.label);
         rm.style.padding = "2px 6px";
         rm.addEventListener("click", () => {
           state.items.splice(idx, 1);

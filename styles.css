@@ -14,7 +14,7 @@
   --accent-weak: #d8e9e0;
   --bg: #f4f5f7;
   --panel: #ffffff;
-  --muted: #6b7280;
+  --muted: #5b6470;
   --danger: #b42318;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
@@ -22,6 +22,14 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* Global visible-focus policy. Every interactive control shows the same
+   accent focus ring on keyboard navigation. :where() keeps specificity at
+   zero so component-specific focus styles can still override if needed. */
+:where(button, a, input, select, textarea, summary, [tabindex="0"]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 html,
@@ -307,7 +315,14 @@ button.danger.primary:hover {
   text-align: center;
   color: var(--muted);
   font-size: 13px;
-  transition: background 0.15s, border-color 0.15s;
+}
+/* The dragover/focus tint transition only runs for users who haven't asked
+   for reduced motion. The :hover/.dragover tint itself stays (it isn't
+   motion). */
+@media (prefers-reduced-motion: no-preference) {
+  #drop-zone {
+    transition: background 0.15s, border-color 0.15s;
+  }
 }
 #drop-zone label {
   display: block;
@@ -336,8 +351,10 @@ button.danger.primary:hover {
   white-space: nowrap;
   border: 0;
 }
-/* Reflect the hidden input's focus onto its container, since the input itself
-   is clipped to nothing. */
+/* Reflect the hidden file input's focus onto its container, since the input
+   itself is clipped to nothing (the global :focus-visible outline would draw
+   on a 1px box). The tint signals where focus landed; the outline is added
+   here too because the container, not the input, is the visible target. */
 #drop-zone:has(input[type="file"]:focus-visible) {
   background: var(--accent-weak);
   border-color: var(--accent);
