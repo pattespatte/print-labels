@@ -367,11 +367,22 @@ button.danger.primary:hover {
 }
 .items-controls-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   align-items: center;
 }
 .items-controls-row #item-sort {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  /* Override the global `select { width: 100% }` so this sort dropdown sizes
+     to its content ("Sort: import order") and leaves room for the inline
+     "Only selected" toggle beside it. Without this, flex-basis: auto resolves
+     to width: 100% and pushes "Only selected" past the panel's right edge.
+     max-width keeps it under ~70% of the row so the toggle always has room;
+     if both still can't fit, the row's flex-wrap drops the toggle to a new
+     line instead of overflowing the panel. */
+  width: auto;
+  max-width: 70%;
+  min-width: 0;
 }
 .items-controls-row .inline-toggle {
   flex: 0 0 auto;
