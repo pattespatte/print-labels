@@ -528,6 +528,17 @@ section.preview-pane {
 .label.grid-on {
   border: 0.5px solid var(--line-strong);
 }
+/* Per-label alignment (P2-4). Horizontal is a simple text-align; vertical
+   middle switches the label to a centered flex column so a variable number
+   of lines sits in the middle of the fixed-height cell. */
+.label.align-center {
+  text-align: center;
+}
+.label.valign-middle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .page-label {
   font-size: 11px;
   color: var(--muted);

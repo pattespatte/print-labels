@@ -298,6 +298,9 @@
           S.formatId = "4336";
           S.skipN = 7;
           S.grid = true;
+          // P2-4: alignment is part of the project + persisted state.
+          S.alignH = "center";
+          S.alignV = "middle";
           const before = Proj.serialize();
           Proj.load(JSON.parse(JSON.stringify(before)));
           const after = Proj.serialize();
@@ -305,6 +308,14 @@
           delete before.exportedAt;
           delete after.exportedAt;
           assert("Project serialize→load→serialize round-trips", JSON.stringify(before) === JSON.stringify(after), "state differs after reload");
+
+          // P2-4: Project.load falls back to defaults for unknown/missing
+          // alignment values (old project files, corrupt data) rather than
+          // accepting arbitrary strings.
+          S.alignH = "left"; S.alignV = "top";
+          Proj.load({ _type: "print-labels-project", version: 1, formatId: "4336", items: [], alignH: "nonsense", alignV: undefined });
+          assert("Project.load rejects unknown alignH", S.alignH === "left");
+          assert("Project.load rejects missing alignV", S.alignV === "top");
 
           summary.textContent = passed + " passed, " + failed + " failed";
           summary.className = failed === 0 ? "pass" : "fail";

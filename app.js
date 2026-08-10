@@ -92,13 +92,15 @@
   // ---------------------------------------------------------------
   const state = {
     items: [], // [{ raw, qty, selected }]
-    mapping: emptyMapping(), // [{ path, sizePt, bold, literal }]
+    mapping: emptyMapping(), // [{ path, sizePt, bold, literal, wrap }]
     formatId: "5027",
     skipN: 0,
     grid: false,
     trueSize: false,
     offsetX: 0, // per-printer calibration offset, mm (signed)
     offsetY: 0,
+    alignH: "left", // per-label horizontal text alignment: "left" | "center"
+    alignV: "top", // per-label vertical text alignment: "top" | "middle"
     fields: [], // discovered paths
     // View-only filters for the items list (never mutate state.items).
     // Transient — not persisted: a fresh reload should show everything.
@@ -308,6 +310,8 @@
         grid: state.grid,
         offsetX: state.offsetX,
         offsetY: state.offsetY,
+        alignH: state.alignH,
+        alignV: state.alignV,
         mapping: JSON.parse(JSON.stringify(state.mapping)),
         items: state.items.map((i) => {
           const out = { qty: i.qty, selected: i.selected };
@@ -332,6 +336,10 @@
       state.grid = !!parsed.grid;
       if (typeof parsed.offsetX === "number") state.offsetX = parsed.offsetX;
       if (typeof parsed.offsetY === "number") state.offsetY = parsed.offsetY;
+      // Align options fall back to defaults on unknown/missing values so old
+      // project files still load.
+      if (parsed.alignH === "left" || parsed.alignH === "center") state.alignH = parsed.alignH;
+      if (parsed.alignV === "top" || parsed.alignV === "middle") state.alignV = parsed.alignV;
       if (Array.isArray(parsed.mapping) && parsed.mapping.length === 4) {
         state.mapping = parsed.mapping.map((m) => ({
           path: m.path || "",
@@ -377,8 +385,8 @@
     LabelRender: {
       // Phase 2, task 2.1
       draw(parent, label, format, opts) {
-        // label: { lines: [{text,sizePt,bold}] } OR null (empty slot)
-        // opts: { grid }
+        // label: { lines: [{text,sizePt,bold,wrap}] } OR null (empty slot)
+        // opts: { grid, alignH, alignV }
         const div = document.createElement("div");
         div.className = "label";
         div.style.width = format.labelW_mm + "mm";
@@ -386,6 +394,11 @@
         if (format.cornerRadius_mm) {
           div.style.borderRadius = format.cornerRadius_mm + "mm";
         }
+        // Per-label alignment (horizontal via text-align, vertical via a class
+        // that switches the label to a centered flex column). Applied even to
+        // empty labels for visual consistency.
+        if (opts && opts.alignH === "center") div.classList.add("align-center");
+        if (opts && opts.alignV === "middle") div.classList.add("valign-middle");
         if (label === null) {
           div.classList.add("empty");
           if (opts && opts.grid) div.classList.add("grid-on");
@@ -546,6 +559,8 @@
         scaleToggle: $("scale-toggle"),
         offsetX: $("offset-x"),
         offsetY: $("offset-y"),
+        alignH: $("align-h"),
+        alignV: $("align-v"),
         formatMeta: $("format-meta"),
         countsMeta: $("counts-meta"),
         zoomMeta: $("zoom-meta"),
@@ -700,6 +715,16 @@
       });
       UI.el.offsetY.addEventListener("change", (e) => {
         state.offsetY = parseFloat(e.target.value) || 0;
+        UI.persist();
+        UI.renderPreview();
+      });
+      UI.el.alignH.addEventListener("change", (e) => {
+        state.alignH = e.target.value === "center" ? "center" : "left";
+        UI.persist();
+        UI.renderPreview();
+      });
+      UI.el.alignV.addEventListener("change", (e) => {
+        state.alignV = e.target.value === "middle" ? "middle" : "top";
         UI.persist();
         UI.renderPreview();
       });
@@ -1302,6 +1327,8 @@
           grid: state.grid,
           offsetX: state.offsetX,
           offsetY: state.offsetY,
+          alignH: state.alignH,
+          alignV: state.alignV,
         });
         if (scale < 1) sheet.style.transform = "scale(" + scale + ")";
         wrap.appendChild(sheet);
@@ -1343,6 +1370,8 @@
             trueSize: state.trueSize,
             offsetX: state.offsetX,
             offsetY: state.offsetY,
+            alignH: state.alignH,
+            alignV: state.alignV,
             mapping: state.mapping,
             // items intentionally NOT persisted (may be large)
           })
@@ -1363,6 +1392,8 @@
         if (typeof s.trueSize === "boolean") state.trueSize = s.trueSize;
         if (typeof s.offsetX === "number") state.offsetX = s.offsetX;
         if (typeof s.offsetY === "number") state.offsetY = s.offsetY;
+        if (s.alignH === "left" || s.alignH === "center") state.alignH = s.alignH;
+        if (s.alignV === "top" || s.alignV === "middle") state.alignV = s.alignV;
         if (Array.isArray(s.mapping) && s.mapping.length === 4) {
           state.mapping = s.mapping;
         }
@@ -1375,6 +1406,8 @@
       UI.el.scaleToggle.checked = state.trueSize;
       UI.el.offsetX.value = state.offsetX;
       UI.el.offsetY.value = state.offsetY;
+      UI.el.alignH.value = state.alignH;
+      UI.el.alignV.value = state.alignV;
     },
   };
 
