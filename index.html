@@ -41,14 +41,16 @@
           </div>
           <div class="items-controls">
             <input type="search" id="item-search" placeholder="Search items…" aria-label="Search items" />
-            <select id="item-sort" aria-label="Sort items">
-              <option value="import">Sort: import order</option>
-              <option value="az">Sort: A→Z</option>
-            </select>
-            <label class="field inline-toggle">
-              <input type="checkbox" id="only-selected" />
-              <span>Only selected</span>
-            </label>
+            <div class="items-controls-row">
+              <select id="item-sort" aria-label="Sort items">
+                <option value="import">Sort: import order</option>
+                <option value="az">Sort: A→Z</option>
+              </select>
+              <label class="field inline-toggle">
+                <input type="checkbox" id="only-selected" />
+                <span>Only selected</span>
+              </label>
+            </div>
           </div>
           <div id="item-editor" hidden>
             <div class="editor-row">
@@ -81,6 +83,16 @@
         <!-- Field mapping -->
         <section class="panel" id="mapper-panel">
           <h2>Field mapping</h2>
+          <div class="mapper-head">
+            <span class="lineno">#</span>
+            <span>path</span>
+            <span class="controls-head">
+              <span>size</span>
+              <span>B</span>
+              <span>wrap</span>
+            </span>
+            <span>string</span>
+          </div>
           <div id="mapper-rows">
             <!-- 4 mapper rows injected by app.js -->
           </div>

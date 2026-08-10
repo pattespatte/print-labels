@@ -346,22 +346,27 @@ button.danger.primary:hover {
   border: 1px solid var(--line);
   border-radius: 4px;
 }
-/* Search / sort / only-selected — a compact row above the list. The search
-   box is the widest content, so it takes the leftover space. */
+/* Search box on its own row, sort + only-selected on the row below. Search
+   is the widest control, so it gets the full width of the first row. */
 .items-controls {
   display: flex;
+  flex-direction: column;
   gap: 6px;
-  align-items: center;
   margin-bottom: 6px;
 }
 .items-controls #item-search {
   flex: 1 1 auto;
   min-width: 0;
 }
-.items-controls #item-sort {
+.items-controls-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.items-controls-row #item-sort {
   flex: 0 0 auto;
 }
-.items-controls .inline-toggle {
+.items-controls-row .inline-toggle {
   flex: 0 0 auto;
   white-space: nowrap;
 }
@@ -423,6 +428,41 @@ button.danger.primary:hover {
   align-items: center;
   gap: 6px;
   margin-bottom: 6px;
+}
+/* Header row mirrors the flex layout of .mapper-row so columns line up. */
+.mapper-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mapper-head .lineno {
+  flex: 0 0 14px;
+  text-align: center;
+}
+.mapper-head > span:nth-child(2) {
+  flex: 1 1 auto;
+}
+.mapper-head .controls-head {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.mapper-head .controls-head span {
+  display: inline-block;
+  text-align: center;
+}
+.mapper-head .controls-head span:nth-child(1) { width: 48px; }
+.mapper-head .controls-head span:nth-child(2) { width: 22px; }
+.mapper-head .controls-head span:nth-child(3) { width: 32px; }
+.mapper-head > span:last-child {
+  flex: 1 1 80px;
+  min-width: 60px;
 }
 .mapper-row .lineno {
   font-size: 11px;
