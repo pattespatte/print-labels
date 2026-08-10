@@ -1353,9 +1353,21 @@
       clone.querySelectorAll(".sheet-wrap").forEach((w) => (w.style.transform = ""));
       root.appendChild(clone);
       document.body.appendChild(root);
+      // Clean up the print clone. Prefer afterprint (fires once the browser
+      // has finished rendering the print dialog / spooling the job), and keep
+      // a setTimeout fallback for browsers that don't fire afterprint. Either
+      // path cancels the other so we don't leave a dangling timer or call
+      // remove() twice.
+      const cleanup = () => {
+        window.removeEventListener("afterprint", onAfterPrint);
+        clearTimeout(fallbackTimer);
+        root.remove();
+      };
+      const onAfterPrint = () => cleanup();
+      let fallbackTimer;
+      window.addEventListener("afterprint", onAfterPrint, { once: true });
       window.print();
-      // Clean up after.
-      setTimeout(() => root.remove(), 1000);
+      fallbackTimer = setTimeout(cleanup, 2000);
     },
 
     // ---- localStorage persistence (Phase 5) ----
