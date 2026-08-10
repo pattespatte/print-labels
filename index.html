@@ -10,6 +10,7 @@
     <header class="app-header">
       <h1>Print Labels</h1>
       <span class="subtitle">HERMA A4 label sheets · print labels from your browser</span>
+      <button id="mode-toggle" type="button" aria-pressed="false">Advanced</button>
       <button id="print-btn-header" class="primary" type="button">Print</button>
     </header>
 
@@ -109,46 +110,51 @@
             <span>Format</span>
             <select id="format-select"></select>
           </label>
-          <label class="field">
-            <span>Skip first N labels (reuse partial sheet)</span>
-            <input type="number" id="skip-n" min="0" value="0" />
-          </label>
-          <label class="field inline-toggle">
-            <input type="checkbox" id="grid-toggle" />
-            <span>Calibration grid (outline every label)</span>
-          </label>
-          <div class="calibration-toggle-row">
-            <label class="field inline-toggle">
-              <input type="checkbox" id="use-calibration" />
-              <span>Use calibration data</span>
-            </label>
-          </div>
-          <div class="field">
-            <span id="offset-caption">Calibration offset X / Y (mm) — nudge every label</span>
-            <div class="offset-row">
-              <input type="number" id="offset-x" aria-labelledby="offset-caption" value="0" step="0.1" min="-10" max="10" />
-              <input type="number" id="offset-y" aria-labelledby="offset-caption" value="0" step="0.1" min="-10" max="10" />
+          <details class="advanced-group">
+            <summary>Advanced layout</summary>
+            <div class="advanced-group-body">
+              <label class="field">
+                <span>Skip first N labels (reuse partial sheet)</span>
+                <input type="number" id="skip-n" min="0" value="0" />
+              </label>
+              <label class="field inline-toggle">
+                <input type="checkbox" id="grid-toggle" />
+                <span>Calibration grid (outline every label)</span>
+              </label>
+              <div class="calibration-toggle-row">
+                <label class="field inline-toggle">
+                  <input type="checkbox" id="use-calibration" />
+                  <span>Use calibration data</span>
+                </label>
+              </div>
+              <div class="field">
+                <span id="offset-caption">Calibration offset X / Y (mm) — nudge every label</span>
+                <div class="offset-row">
+                  <input type="number" id="offset-x" aria-labelledby="offset-caption" value="0" step="0.1" min="-10" max="10" />
+                  <input type="number" id="offset-y" aria-labelledby="offset-caption" value="0" step="0.1" min="-10" max="10" />
+                </div>
+              </div>
+              <div class="offset-row">
+                <label class="field" style="margin: 0">
+                  <span>Align horizontal</span>
+                  <select id="align-h">
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                  </select>
+                </label>
+                <label class="field" style="margin: 0">
+                  <span>Align vertical</span>
+                  <select id="align-v">
+                    <option value="top">Top</option>
+                    <option value="middle">Middle</option>
+                  </select>
+                </label>
+              </div>
+              <p class="hint">
+                Print tip: set paper size A4, margins to None, and turn off headers/footers.
+              </p>
             </div>
-          </div>
-          <div class="offset-row">
-            <label class="field" style="margin: 0">
-              <span>Align horizontal</span>
-              <select id="align-h">
-                <option value="left">Left</option>
-                <option value="center">Center</option>
-              </select>
-            </label>
-            <label class="field" style="margin: 0">
-              <span>Align vertical</span>
-              <select id="align-v">
-                <option value="top">Top</option>
-                <option value="middle">Middle</option>
-              </select>
-            </label>
-          </div>
-          <p class="hint">
-            Print tip: set paper size A4, margins to None, and turn off headers/footers.
-          </p>
+          </details>
         </section>
 
         <div class="panel" id="print-panel">

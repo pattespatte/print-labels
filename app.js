@@ -94,6 +94,10 @@
     items: [], // [{ raw, qty, selected }]
     mapping: emptyMapping(), // [{ path, sizePt, bold, literal, wrap }]
     formatId: "5027",
+    // Basic/Advanced mode. Default basic — the short data→labels→print path.
+    // Advanced reveals the mapper panel and per-panel layout disclosures.
+    // Persisted on STORAGE_KEY as the only mode-related state (PRD §6.1).
+    advanced: false,
     skipN: 0,
     grid: false,
     // View-only calibration overlay: replace the preview with a single
@@ -559,6 +563,8 @@
         editorSave: $("editor-save"),
         editorCancel: $("editor-cancel"),
         editorQty: $("editor-qty"),
+        modeToggle: $("mode-toggle"),
+        mapperPanel: $("mapper-panel"),
         printBtnHeader: $("print-btn-header"),
         modalBackdrop: $("modal-backdrop"),
         modalTitle: $("modal-title"),
@@ -594,6 +600,7 @@
       UI.bind();
       UI.renderItems();
       UI.renderPreview();
+      UI.applyMode();
     },
 
     buildFormatSelect() {
@@ -718,6 +725,13 @@
     },
 
     bind() {
+      // Basic/Advanced mode toggle. Flips state.advanced, persists, and lets
+      // applyMode() drive all visibility (class on <body>, CSS does the rest).
+      UI.el.modeToggle.addEventListener("click", () => {
+        state.advanced = !state.advanced;
+        UI.persist();
+        UI.applyMode();
+      });
       UI.el.formatSelect.addEventListener("change", (e) => {
         state.formatId = e.target.value;
         UI.persist();
@@ -1503,6 +1517,7 @@
           STORAGE_KEY,
           JSON.stringify({
             formatId: state.formatId,
+            advanced: state.advanced,
             skipN: state.skipN,
             grid: state.grid,
             trueSize: state.trueSize,
@@ -1525,6 +1540,7 @@
         if (!raw) return;
         const s = JSON.parse(raw);
         if (s.formatId && window.FORMATS[s.formatId]) state.formatId = s.formatId;
+        if (typeof s.advanced === "boolean") state.advanced = s.advanced;
         if (typeof s.skipN === "number") state.skipN = s.skipN;
         if (typeof s.grid === "boolean") state.grid = s.grid;
         if (typeof s.trueSize === "boolean") state.trueSize = s.trueSize;
@@ -1546,6 +1562,28 @@
       UI.el.offsetY.value = state.offsetY;
       UI.el.alignH.value = state.alignH;
       UI.el.alignV.value = state.alignV;
+    },
+
+    // Apply the current basic/advanced mode to the DOM. All visibility is
+    // CSS-driven (a class on <body>), mirroring the .fits-true principle — no
+    // inline style.display writes. Also updates the toggle button's aria-pressed
+    // and label, and rescues focus if the active element is inside a panel that
+    // basic mode hides (otherwise focus lands on <body>).
+    applyMode() {
+      const advanced = state.advanced;
+      document.body.classList.toggle("mode-advanced", advanced);
+      UI.el.modeToggle.setAttribute("aria-pressed", String(advanced));
+      UI.el.modeToggle.textContent = advanced ? "Basic" : "Advanced";
+      // Focus rescue: if the focused control is now inside a hidden panel,
+      // move focus to the toggle itself so it doesn't strand on <body>.
+      const ae = document.activeElement;
+      if (
+        !advanced &&
+        ae &&
+        UI.el.mapperPanel.contains(ae)
+      ) {
+        UI.el.modeToggle.focus();
+      }
     },
   };
 

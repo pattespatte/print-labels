@@ -731,3 +731,70 @@ section.preview-pane {
     display: inline-flex;
   }
 }
+
+/* --- Basic / Advanced mode ---
+   A class on <body> (toggled by UI.applyMode) drives all visibility, mirroring
+   the .fits-true principle: no inline style.display writes. Default is basic
+   (body has no .mode-advanced); advanced adds it back. */
+
+/* The <summary> for the per-panel "Advanced layout" disclosure. Native
+   <details> handles open/close and keyboard operability (Enter/Space) for
+   free; this just styles the header to read clearly as a collapsible row.
+   display: block (not the default list-item) removes the native marker box
+   so our own ::before arrow is the single indicator. */
+details.advanced-group > summary {
+  display: block;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0;
+  padding: 4px 0;
+  list-style: none;
+  user-select: none;
+}
+details.advanced-group > summary::-webkit-details-marker {
+  display: none;
+}
+/* Disclosure indicator (▶ closed, rotated to point down when open) drawn via
+   a pseudo-element so it composes with the native toggle without extra DOM.
+   A muted accent keeps it subtle but visibly interactive. */
+details.advanced-group > summary::before {
+  content: "▶";
+  display: inline-block;
+  width: 1.3em;
+  margin-right: 2px;
+  color: var(--muted);
+  font-size: 10px;
+  transition: transform 0.15s;
+}
+details.advanced-group[open] > summary::before {
+  transform: rotate(90deg);
+}
+details.advanced-group > summary:hover {
+  color: var(--accent);
+}
+details.advanced-group > summary:hover::before {
+  color: var(--accent);
+}
+details.advanced-group > .advanced-group-body {
+  margin-top: 8px;
+}
+
+/* Basic mode (body:not(.mode-advanced)):
+   - Hide the whole mapper panel (auto-mapping covers the 90% case).
+   - The Sheet panel's "Advanced layout" <details> stays visible in both modes
+     and works normally — it's the progressive-disclosure home for skip-N,
+     grid, calibration, offsets, and alignment. Collapsed by default; the
+     user opens it on demand. (Native <details> handles the toggle; no JS.) */
+body:not(.mode-advanced) #mapper-panel {
+  display: none;
+}
+
+/* Basic mode: hide the true-size checkbox in the preview toolbar (parallel
+   to the .fits-true no-op hide above). The zoom % stays visible. This rule's
+   specificity (0,4,2) outranks the narrow-screen .fits-true re-show (0,3,1),
+   so the toggle stays hidden in basic mode even below the 900px breakpoint;
+   in advanced mode this rule doesn't match and the re-show applies normally. */
+body:not(.mode-advanced) .preview-toolbar label.inline-toggle[for="scale-toggle"] {
+  display: none;
+}
