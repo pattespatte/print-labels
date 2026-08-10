@@ -86,7 +86,12 @@
       cornerRadius_mm: 1,
     },
     "4346": {
-      // VERIFY: 48/sheet. cols/rows assumed 4×12; confirm margins and pitch.
+      // 48/sheet confirmed (4×12). pitchX 48.26 and pitchY 23.99 retained; with
+      // marginLeft 9.6 the columns sit at 9.6/9.9 mm (symmetric). The previous
+      // marginTop 13.5 pushed the last row 1.6 mm past the sheet edge (13.5 +
+      // 11×23.99 + 21.167 = 298.6 mm). Corrected to 6.0, which mirrors the
+      // horizontal symmetry: top 6.0 / bottom 5.9 mm. Still derive-from-symmetry,
+      // not an official HERMA template — confirm with a ruler before relying on it.
       id: "4346",
       name: "HERMA 4346 · 45.7×21.2mm · 48/sheet",
       pageW_mm: 210,
@@ -95,7 +100,7 @@
       rows: 12,
       labelW_mm: 45.72,
       labelH_mm: 21.167,
-      marginTop_mm: 13.5,
+      marginTop_mm: 6.0,
       marginLeft_mm: 9.6,
       pitchX_mm: 48.26,
       pitchY_mm: 23.99,

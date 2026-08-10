@@ -74,6 +74,17 @@
           p = L.slotPosition(fmt4336, 5);
           assert("4336 slot 5 y = 19.78 (manual pitchY)", approx(p.y_mm, 2.0 + 17.78), "got " + p.y_mm);
 
+          // 4346 overflow regression: the last row must stay on the sheet.
+          // marginTop + (rows-1)*pitchY + labelH must not exceed pageH.
+          // Previously marginTop 13.5 pushed the grid 1.6 mm past the bottom
+          // edge; corrected to 6.0 for vertical symmetry with marginLeft.
+          const fmt4346 = F["4346"];
+          const lastRow4346 = L.slotPosition(fmt4346, (fmt4346.rows - 1) * fmt4346.cols);
+          const bottomEdge4346 = lastRow4346.y_mm + fmt4346.labelH_mm;
+          assert("4346 last row top y = 270.89 (6 + 11×23.99)", approx(lastRow4346.y_mm, 6.0 + 11 * 23.99), "got " + lastRow4346.y_mm);
+          assert("4346 last row bottom edge within sheet", bottomEdge4346 <= fmt4346.pageH_mm, bottomEdge4346 + " > " + fmt4346.pageH_mm);
+          assert("4346 bottom margin ≈ top margin (symmetry)", Math.abs((fmt4346.pageH_mm - bottomEdge4346) - fmt4346.marginTop_mm) < 0.1, "got " + (fmt4346.pageH_mm - bottomEdge4346));
+
           // pageOf: 65 slots per page → slot 65 starts page 1
           assert("5027 pageOf(0) = 0", L.pageOf(fmt5027, 0) === 0);
           assert("5027 pageOf(64) = 0", L.pageOf(fmt5027, 64) === 0);
