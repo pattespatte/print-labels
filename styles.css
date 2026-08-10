@@ -152,6 +152,13 @@ textarea {
   min-width: 0;
 }
 
+/* "Use calibration data" sits on its own row between the grid toggle and the
+   X/Y offset block. The inline-toggle inside has margin: 0, so the wrapper
+   provides the vertical rhythm (matching the 6px field gap above/below). */
+.calibration-toggle-row {
+  margin: 6px 0;
+}
+
 button {
   padding: 7px 12px;
   border: 1px solid var(--line-strong);

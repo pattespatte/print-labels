@@ -96,6 +96,10 @@
     formatId: "5027",
     skipN: 0,
     grid: false,
+    // View-only calibration overlay: replace the preview with a single
+    // calibration sheet (4 corner markers, rest empty). Transient — not
+    // persisted, so a reload always returns to the real data.
+    useCalibration: false,
     trueSize: false,
     offsetX: 0, // per-printer calibration offset, mm (signed)
     offsetY: 0,
@@ -571,6 +575,7 @@
         formatSelect: $("format-select"),
         skipN: $("skip-n"),
         gridToggle: $("grid-toggle"),
+        useCalibration: $("use-calibration"),
         scaleToggle: $("scale-toggle"),
         offsetX: $("offset-x"),
         offsetY: $("offset-y"),
@@ -747,6 +752,12 @@
         state.grid = e.target.checked;
         UI.el.printChecklist.hidden = !state.grid;
         UI.persist();
+        UI.renderPreview();
+      });
+      // Transient view-only overlay: no persist (a reload always returns to
+      // the real data).
+      UI.el.useCalibration.addEventListener("change", (e) => {
+        state.useCalibration = e.target.checked;
         UI.renderPreview();
       });
       UI.el.scaleToggle.addEventListener("change", (e) => {
@@ -1269,6 +1280,15 @@
       host.innerHTML = "";
       UI.el.printBtn.disabled = true;
 
+      // Calibration overlay: replace the preview with a single calibration
+      // sheet (4 corner markers, rest empty). Branches before the empty/
+      // no-selection guards so it renders even with no data imported — which
+      // is the point (calibrate before importing).
+      if (state.useCalibration) {
+        UI.renderCalibration(fmt, host);
+        return;
+      }
+
       const selectedCount = state.items.reduce(
         (n, i) => n + (i.selected ? 1 : 0),
         0
@@ -1355,6 +1375,86 @@
           host.appendChild(lbl);
         }
       });
+    },
+
+    // Calibration overlay: a single sheet where only the four corner labels
+    // carry text (a bold heading plus position info), every other label is
+    // empty. Reuses SheetRender.drawPage so the grid outline, X/Y nudge, and
+    // alignment all compose for free. The frozen-lines items bypass the
+    // mapper, so this renders identically with or without imported data.
+    renderCalibration(fmt, host) {
+      const perPage = Layout.slotsPerPage(fmt);
+      const { cols, rows } = fmt;
+      const slots = new Array(perPage).fill(null);
+
+      // Corner slot indices (row-major, confirmed by Layout.slotPosition).
+      const corners = [
+        { idx: 0, heading: "Upper left label" },
+        { idx: cols - 1, heading: "Upper right label" },
+        { idx: (rows - 1) * cols, heading: "Lower left label" },
+        { idx: perPage - 1, heading: "Lower right label" },
+      ];
+
+      // Single-source format (format 4428 is 1×1): collapse duplicate slots
+      // so the four corners don't overwrite each other on a one-label sheet.
+      const placed = new Set();
+      for (const c of corners) {
+        if (placed.has(c.idx)) continue;
+        placed.add(c.idx);
+        const col = c.idx % cols;
+        const row = Math.floor(c.idx / cols);
+        // Nominal page position (no X/Y nudge) — gives the absolute mm coords
+        // the format spec claims for this slot, useful for verifying alignment.
+        const pos = Layout.slotPosition(fmt, c.idx, { x: 0, y: 0 });
+        const labelNo = row * cols + col + 1;
+        slots[c.idx] = {
+          lines: [
+            { text: c.heading, sizePt: 7, bold: true, wrap: false },
+            { text: "Label " + labelNo + " – row " + (row + 1) + ", col " + (col + 1), sizePt: 6, bold: false, wrap: false },
+            { text: pos.x_mm.toFixed(1) + " × " + pos.y_mm.toFixed(1) + " mm", sizePt: 6, bold: false, wrap: false },
+            { text: cols + " × " + rows + " sheet (" + perPage + " labels)", sizePt: 6, bold: false, wrap: false },
+          ],
+          qty: 1,
+          selected: true,
+        };
+      }
+
+      // Screen scale — same math as renderPreview.
+      const paneWpx = host.parentElement.clientWidth - 32;
+      const sheetWpx = fmt.pageW_mm * PX_PER_MM;
+      const sheetHpx = fmt.pageH_mm * PX_PER_MM;
+      const fitScale = Math.min(1, paneWpx / sheetWpx);
+      const alreadyTrue = fitScale >= 1;
+      const scale = state.trueSize ? 1 : fitScale;
+
+      UI.el.scaleToggle.disabled = alreadyTrue;
+      host.parentElement
+        .querySelector(".preview-toolbar")
+        .classList.toggle("fits-true", alreadyTrue);
+      UI.el.scaleToggle.title = alreadyTrue
+        ? "Sheet already fits at 100% in this pane"
+        : "Show the sheet at 1:1 size (may overflow the pane)";
+      UI.el.zoomMeta.textContent = Math.round(scale * 100) + "%";
+
+      const wrap = document.createElement("div");
+      wrap.className = "sheet-wrap";
+      wrap.style.width = sheetWpx * scale + "px";
+      wrap.style.height = sheetHpx * scale + "px";
+      const sheet = UI.SheetRender.drawPage(fmt, slots, {
+        grid: state.grid,
+        offsetX: state.offsetX,
+        offsetY: state.offsetY,
+        alignH: state.alignH,
+        alignV: state.alignV,
+      });
+      if (scale < 1) sheet.style.transform = "scale(" + scale + ")";
+      wrap.appendChild(sheet);
+      host.appendChild(wrap);
+
+      UI.el.countsMeta.textContent =
+        "Calibration sheet · " + perPage + " labels, " + placed.size + " markers";
+      UI.el.countsMeta.hidden = false;
+      UI.el.printBtn.disabled = false;
     },
 
     print() {
