@@ -445,6 +445,21 @@
         return (ctx.measureText(text).width / PX_PER_MM); // → mm
       },
       _cache: new Map(),
+      // FIFO cap on the measurement cache. A large import of unique label
+      // strings would otherwise grow the Map without limit; 2000 entries is
+      // far more than a typical session touches while staying bounded. Map
+      // iterates in insertion order, so keys().next() is the oldest entry.
+      _cacheCap: 2000,
+      _cacheSet(key, value) {
+        const cache = UI.LabelRender._cache;
+        // Only evict when adding a brand-new key at/over the cap; updating an
+        // existing key must not evict (it would both shrink the cache needlessly
+        // and evict a survivor whose key happened to be oldest).
+        if (!cache.has(key) && cache.size >= UI.LabelRender._cacheCap) {
+          cache.delete(cache.keys().next().value);
+        }
+        cache.set(key, value);
+      },
       // Shrink the font until `text` fits within maxLines lines of maxW_mm each
       // (budget = maxW_mm × maxLines). At the floor, nowrap mode (maxLines=1)
       // truncates char-by-char with an ellipsis; wrap mode leaves the text
@@ -463,7 +478,7 @@
           const w = UI.LabelRender._measure(text, fontPx, bold);
           if (w <= budget) {
             const result = { text, sizePt: size };
-            UI.LabelRender._cache.set(cacheKey, result);
+            UI.LabelRender._cacheSet(cacheKey, result);
             return result;
           }
           size -= 0.5;
@@ -472,7 +487,7 @@
         // mode, return the full text at min size — the CSS clamp bounds it.
         if (lines > 1) {
           const result = { text, sizePt: minSize };
-          UI.LabelRender._cache.set(cacheKey, result);
+          UI.LabelRender._cacheSet(cacheKey, result);
           return result;
         }
         const fontPx = minSize * (96 / 72);
@@ -481,7 +496,7 @@
           t = t.slice(0, -1);
         }
         const result = { text: t + "…", sizePt: minSize };
-        UI.LabelRender._cache.set(cacheKey, result);
+        UI.LabelRender._cacheSet(cacheKey, result);
         return result;
       },
     },

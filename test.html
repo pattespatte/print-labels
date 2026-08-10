@@ -269,6 +269,32 @@
           assert("fitText short text unchanged by wrap",
             FT("Hi", 6, false, W, 1).sizePt === FT("Hi", 6, false, W, 2).sizePt);
 
+          // fitText cache FIFO cap (P2-6): the cache must not grow unbounded.
+          // _cacheSet evicts the oldest entry (Map insertion order) once the
+          // cap is reached, so live size never exceeds the cap and a fetched
+          // result is still correct after eviction churn.
+          const LR = window.PrintLabels.UI.LabelRender;
+          const oldCap = LR._cacheCap;
+          const oldCache = LR._cache;
+          LR._cache = new Map();
+          LR._cacheCap = 5; // small cap to make eviction observable
+          // Fill past the cap with unique keys.
+          for (let i = 0; i < 20; i++) {
+            LR._cacheSet("k" + i, { text: "v" + i, sizePt: i });
+          }
+          assert("fitText cache respects cap", LR._cache.size === LR._cacheCap);
+          // Oldest entries were evicted (FIFO); the last 5 survive.
+          assert("fitText cache evicted oldest", !LR._cache.has("k0") && LR._cache.has("k19"));
+          // A surviving entry is returned intact (no corruption from eviction).
+          assert("fitText cache survivor intact", LR._cache.get("k19").sizePt === 19);
+          // Re-fetching a survivor then adding a new key keeps size at cap and
+          // does NOT re-insert the survivor (key uniqueness preserved).
+          LR._cacheSet("k19", { text: "v19b", sizePt: 99 });
+          assert("fitText cache set-existing no growth", LR._cache.size === LR._cacheCap);
+          assert("fitText cache set-existing updates value", LR._cache.get("k19").sizePt === 99);
+          LR._cacheCap = oldCap;
+          LR._cache = oldCache;
+
           // resolveLines carries the per-line `wrap` flag through for both
           // frozen (manual) lines and mapper-driven lines.
           const RL2 = window.PrintLabels.resolveLines;
