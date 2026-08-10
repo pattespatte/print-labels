@@ -68,6 +68,121 @@
       cornerRadius_mm: 1.5,
     },
 
+    // --- AVERY Zweckform / A4 codes. Geometry sourced from published Word template
+    // presets and template sites (PieterPost, openlabelmaker, hlabels.com, LabelPlanet
+    // cross-reference guide). L7911-10 and L7651 reuse the HERMA 4346 / 5027 die cuts
+    // (same dimensions, per-sheet count, and grid); the AVERY codes are listed separately
+    // so users can match the package code in their hand. Margins/pitch here match the
+    // published presets but are not empirically printer-calibrated the way 5027/4336 are.
+    "L7911-10": {
+      // Avery Zweckform L7911 / L7636 (also sold as 7636-10, L7636-25). Same die cut
+      // as HERMA 4346: 48/sheet, 45.7 x 21.2 mm, 4 cols x 12 rows. Dimensions and grid
+      // confirmed by hlabels.com, LabelPlanet LP48-45, and Avery's own template page.
+      id: "L7911-10",
+      name: "AVERY L7911-10 / L7636 · 45.7×21.2mm · 48/sheet",
+      pageW_mm: 210,
+      pageH_mm: 297,
+      cols: 4,
+      rows: 12,
+      labelW_mm: 45.72,
+      labelH_mm: 21.167,
+      marginTop_mm: 6.0,
+      marginLeft_mm: 9.6,
+      pitchX_mm: 48.26,
+      pitchY_mm: 23.99,
+      cornerRadius_mm: 2,
+    },
+    "L7160": {
+      // 21/sheet, 63.5 x 38.1 mm, 3 cols x 7 rows. Word preset: side 0.86 cm,
+      // top 1.51 cm, pitch 6.64 cm x 3.81 cm (PieterPost). The standard A4 address label.
+      id: "L7160",
+      name: "AVERY L7160 · 63.5×38.1mm · 21/sheet",
+      pageW_mm: 210,
+      pageH_mm: 297,
+      cols: 3,
+      rows: 7,
+      labelW_mm: 63.5,
+      labelH_mm: 38.1,
+      marginTop_mm: 15.1,
+      marginLeft_mm: 8.6,
+      pitchX_mm: 66.4,
+      pitchY_mm: 38.1,
+      cornerRadius_mm: 2.5,
+    },
+    "L7163": {
+      // 14/sheet, 99.1 x 38.1 mm, 2 cols x 7 rows. Word preset: side 0.61 cm,
+      // top 1.51 cm, pitch 10.2 cm x 3.81 cm (PieterPost / openlabelmaker).
+      id: "L7163",
+      name: "AVERY L7163 · 99.1×38.1mm · 14/sheet",
+      pageW_mm: 210,
+      pageH_mm: 297,
+      cols: 2,
+      rows: 7,
+      labelW_mm: 99.1,
+      labelH_mm: 38.1,
+      marginTop_mm: 15.1,
+      marginLeft_mm: 6.1,
+      pitchX_mm: 102.0,
+      pitchY_mm: 38.1,
+      cornerRadius_mm: 2.5,
+    },
+    "L7651": {
+      // 65/sheet, 38.1 x 21.2 mm, 5 cols x 13 rows. Same die cut as HERMA 5027.
+      // HERMA 5027 has an empirically tuned pitchX override (39.5mm) for the user's
+      // printer; this AVERY entry keeps the nominal symmetric geometry instead —
+      // recalibrate if you see horizontal drift across columns.
+      id: "L7651",
+      name: "AVERY L7651 · 38.1×21.2mm · 65/sheet",
+      pageW_mm: 210,
+      pageH_mm: 297,
+      cols: 5,
+      rows: 13,
+      labelW_mm: 38.1,
+      labelH_mm: 21.2,
+      marginTop_mm: 6.0,
+      marginLeft_mm: 10.0,
+      pitchX_mm: 38.1,
+      pitchY_mm: 21.2,
+      cornerRadius_mm: 2,
+    },
+    "L7165": {
+      // 8/sheet, 99.1 x 67.7 mm, 2 cols x 4 rows. Word preset: side 0.47 cm,
+      // top 1.3 cm, pitch 10.16 cm x 6.77 cm (howtodotechystuff). Vertical pitch 67.7mm
+      // is tight: top 13 + 3×67.7 + 67.7 = 284.8mm, ~12mm bottom edge — fits.
+      id: "L7165",
+      name: "AVERY L7165 · 99.1×67.7mm · 8/sheet",
+      pageW_mm: 210,
+      pageH_mm: 297,
+      cols: 2,
+      rows: 4,
+      labelW_mm: 99.1,
+      labelH_mm: 67.7,
+      marginTop_mm: 13.0,
+      marginLeft_mm: 4.7,
+      pitchX_mm: 101.6,
+      pitchY_mm: 67.7,
+      cornerRadius_mm: 3,
+    },
+    "L7169": {
+      // 4/sheet, 99.1 x 139 mm, 2 cols x 2 rows. Word preset: side 0.95 cm,
+      // top 0.46 cm, pitch 13.9 cm x 10.16 cm (howtodotechystuff). Note the preset's
+      // LW/HP and LH/VP are swapped relative to the landscape label orientation; we
+      // use width 99.1 x height 139 in portrait (matches the L7169 product pages).
+      id: "L7169",
+      name: "AVERY L7169 · 99.1×139mm · 4/sheet",
+      pageW_mm: 210,
+      pageH_mm: 297,
+      cols: 2,
+      rows: 2,
+      labelW_mm: 99.1,
+      labelH_mm: 139.0,
+      marginTop_mm: 9.5,
+      marginLeft_mm: 4.6,
+      pitchX_mm: 101.6,
+      pitchY_mm: 139.0,
+      cornerRadius_mm: 3,
+    },
+
     // --- VERIFY: margins/pitch below unconfirmed against official HERMA templates ---
     "4344": {
       // VERIFY: 189/sheet. cols/rows split assumed 9×21 from 25.4mm pitch; confirm.
@@ -182,5 +297,12 @@
     "4632",
     "4360",
     "4428",
+    // AVERY Zweckform / A4 codes — curated common set.
+    "L7911-10",
+    "L7160",
+    "L7163",
+    "L7651",
+    "L7165",
+    "L7169",
   ];
 })();
