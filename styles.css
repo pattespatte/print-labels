@@ -312,11 +312,31 @@ button.danger.primary:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
-/* Hide the file input. The inner <label for="file-input"> forwards clicks
-   to it; the drop handler is on #drop-zone itself. display:none is safe here
-   because the label (not the input) is the click target. */
+/* Hide the native file input visually but keep it keyboard-focusable (in the
+   tab order + accessibility tree). display:none removed it from both, so the
+   <label for="file-input"> only forwarded mouse clicks — a keyboard user could
+   not reach it. The clip pattern (same as .visually-hidden) hides it without
+   taking it out of the focus sequence; the focus-visible rule below lights up
+   the drop-zone so the user can see where focus landed. */
 #drop-zone input[type="file"] {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+/* Reflect the hidden input's focus onto its container, since the input itself
+   is clipped to nothing. */
+#drop-zone:has(input[type="file"]:focus-visible) {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Item list */
