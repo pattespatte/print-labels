@@ -445,10 +445,11 @@ button.danger.primary:hover {
   text-align: center;
 }
 .mapper-head > span:nth-child(2) {
-  flex: 1 1 auto;
+  flex: 1 1 80px;
+  min-width: 0;
 }
 .mapper-head .controls-head {
-  flex: 0 0 auto;
+  flex: 0 0 120px;
   display: flex;
   gap: 4px;
   align-items: center;
@@ -457,9 +458,9 @@ button.danger.primary:hover {
   display: inline-block;
   text-align: center;
 }
-.mapper-head .controls-head span:nth-child(1) { width: 48px; }
-.mapper-head .controls-head span:nth-child(2) { width: 22px; }
-.mapper-head .controls-head span:nth-child(3) { width: 32px; }
+.mapper-head .controls-head span:nth-child(1) { width: 50px; }
+.mapper-head .controls-head span:nth-child(2) { width: 26px; }
+.mapper-head .controls-head span:nth-child(3) { width: 36px; }
 .mapper-head > span:last-child {
   flex: 1 1 80px;
   min-width: 60px;
