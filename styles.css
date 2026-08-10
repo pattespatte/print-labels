@@ -389,7 +389,20 @@ button.danger.primary:hover {
 .item-row:last-child {
   border-bottom: none;
 }
+/* .name is a real <button> (keyboard-operable: opens the item editor), so
+   reset the global button chrome (border/background/padding/font) so it reads
+   as plain ellipsised text again. The global :focus-visible rule (added with
+   the a11y pass) lights up the focus ring; no per-rule focus style needed. */
 .item-row .name {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

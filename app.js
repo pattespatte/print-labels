@@ -1197,14 +1197,25 @@
           // from view immediately rather than linger as an unticked row.
           if (state.itemsView.onlySelected) UI.renderItems();
         });
-        const name = document.createElement("div");
+        // A real <button> rather than a clickable <div>: native buttons are
+        // keyboard-reachable (Tab) and operable with Enter/Space, so AT users
+        // can open the item editor — the primary per-row action — without a
+        // custom role/tabindex/keydown shim. The .item-row grid places .name
+        // in column 2, so swapping div→button needs only a CSS reset of the
+        // default button chrome (see .item-row .name in styles.css).
+        const name = document.createElement("button");
+        name.type = "button";
         name.className = "name";
         name.textContent = entry.label;
         name.title = it.lines ? "Manual entry — click to edit" : "Imported — click to edit";
-        // Click the label text to edit in place. Manual items edit their frozen
-        // lines directly; imported items get their resolved lines pre-filled, so
-        // saving creates a frozen-lines override (resolveLines then bypasses the
-        // mapper for this item).
+        name.setAttribute(
+          "aria-label",
+          "Edit item " + entry.label
+        );
+        // Click (mouse) or Enter/Space (keyboard) opens the editor in place.
+        // Manual items edit their frozen lines directly; imported items get
+        // their resolved lines pre-filled, so saving creates a frozen-lines
+        // override (resolveLines then bypasses the mapper for this item).
         name.addEventListener("click", () => {
           UI.openEditor(resolveLines(it), it.qty, idx);
         });
