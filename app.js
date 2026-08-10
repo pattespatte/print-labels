@@ -591,6 +591,7 @@
         countsMeta: $("counts-meta"),
         zoomMeta: $("zoom-meta"),
         preview: $("preview"),
+        previewSummary: $("preview-summary"),
         printBtn: $("print-btn"),
         printChecklist: $("print-checklist"),
       };
@@ -1407,6 +1408,7 @@
       // no-selection guards so it renders even with no data imported — which
       // is the point (calibrate before importing).
       if (state.useCalibration) {
+        // Calibration has its own summary logic inside renderCalibration.
         UI.renderCalibration(fmt, host);
         return;
       }
@@ -1422,11 +1424,13 @@
       const labelCount = Layout.expandItems(state.items).length;
       if (state.items.length === 0) {
         UI.el.countsMeta.hidden = true;
+        UI.el.previewSummary.textContent = "";
         host.innerHTML = '<p class="status-msg">Import a JSON file to begin.</p>';
         return;
       }
       if (selectedCount === 0) {
         UI.el.countsMeta.hidden = true;
+        UI.el.previewSummary.textContent = "";
         host.innerHTML =
           '<p class="status-msg">Select at least one item to preview.</p>';
         return;
@@ -1435,6 +1439,7 @@
       const perPage = Layout.slotsPerPage(fmt);
       if (state.skipN >= perPage) {
         UI.el.countsMeta.hidden = true;
+        UI.el.previewSummary.textContent = "";
         host.innerHTML =
           '<p class="status-msg">Skip-N is ≥ labels per sheet — the first sheet would be blank.</p>';
         return;
@@ -1452,6 +1457,18 @@
         labelCount + " labels · " +
         pages.length + " " + sheetWord;
       UI.el.countsMeta.hidden = false;
+
+      // Screen-reader summary: a prose description of the sheet layout so
+      // SR users can understand the preview without inspecting every cell.
+      const summaryParts = [
+        fmt.name + ", " + perPage + " labels per sheet, " +
+          pages.length + " " + sheetWord + ", " + labelCount + " labels total",
+        selectedCount + " selected, " + labelCount + " labels will print",
+      ];
+      if (state.skipN > 0) {
+        summaryParts.push(state.skipN + " label" + (state.skipN === 1 ? "" : "s") + " skipped at start");
+      }
+      UI.el.previewSummary.textContent = summaryParts.join(". ") + ".";
 
       // Compute screen scale to fit pane width.
       const paneWpx = host.parentElement.clientWidth - 32;
@@ -1576,6 +1593,10 @@
       UI.el.countsMeta.textContent =
         "Calibration sheet · " + perPage + " labels, " + placed.size + " markers";
       UI.el.countsMeta.hidden = false;
+      UI.el.previewSummary.textContent =
+        "Calibration sheet. " + perPage + " labels, " +
+        placed.size + " corner marker" + (placed.size === 1 ? "" : "s") +
+        " placed.";
       UI.el.printBtn.disabled = false;
     },
 
